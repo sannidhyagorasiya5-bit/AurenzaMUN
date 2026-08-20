@@ -48,7 +48,7 @@ export function AnimatedHeading({
       <span className="sr-only">{fullText}</span>
       <motion.span
         aria-hidden
-        className="block"
+        className="block select-none"
         variants={containerStagger}
         initial="hidden"
         whileInView="visible"
