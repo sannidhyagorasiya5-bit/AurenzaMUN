@@ -75,10 +75,10 @@ export function Hero() {
             </MagneticButton>
           </motion.div>
 
-          <motion.dl className="mt-12 flex gap-12" {...fade(0.8)}>
+          <motion.dl className="mt-12 flex flex-wrap gap-6 sm:flex-nowrap sm:gap-12" {...fade(0.8)}>
             {hero.stats.map((s) => (
               <div key={s.label} className="text-center">
-                <dd className="whitespace-nowrap font-display text-5xl font-bold text-blue sm:text-6xl">
+                <dd className="whitespace-nowrap font-display text-4xl font-bold tabular-nums text-blue sm:text-6xl">
                   <CountUp to={s.value} duration={5} />
                   {"suffix" in s ? s.suffix : ""}
                 </dd>
