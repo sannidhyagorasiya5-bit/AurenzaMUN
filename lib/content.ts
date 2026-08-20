@@ -162,10 +162,10 @@ export const secretariat = {
     "AurenzaMUN is guided by a dedicated crew committed to delivering an exceptional conference experience.",
   members: [
     {
-      name: "Ruquiyah",
+      name: "Ruqaiyah Bharmal",
       role: "SECRETARY GENERAL",
       subtitle: "SECRETARY GENERAL · AURENZAMUN",
-      bio: "Leading AurenzaMUN as Secretary General, Ruquiyah brings vision, discipline, and diplomatic acumen to ensure a world-class conference experience for every delegate.",
+      bio: "Leading AurenzaMUN as Secretary General, Ruqaiyah brings vision, discipline, and diplomatic acumen to ensure a world-class conference experience for every delegate.",
     },
     {
       name: "Arnav Bohra",

@@ -52,7 +52,7 @@ export function TrackTabs({
     <div
       role="tablist"
       aria-label="Committee tracks"
-      className="glass inline-flex flex-wrap gap-1 rounded-full p-1.5"
+      className="glass inline-flex flex-wrap gap-1.5 rounded-2xl p-1.5 sm:rounded-full"
     >
       {tabs.map((tab, i) => {
         const active = tab.id === value;
