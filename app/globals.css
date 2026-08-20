@@ -61,17 +61,15 @@ section[id] {
   scroll-margin-top: 6rem;
 }
 
-/* Interactive controls (buttons, links, tabs) shouldn't highlight/select on
-   tap — a normal tap's tiny finger movement was being read as a text-select
-   drag on touch, especially on pointer-tracking components like TiltCard
-   and MagneticButton. Plain text content is untouched, so it still selects
-   normally on double-tap / long-press. */
-a,
-button,
-[role="button"],
-[role="tab"] {
+/* Nothing on this page needs to be drag-selected, and scoping the fix to
+   individual elements kept missing spots on mobile (a tap's tiny finger
+   movement was being read as a text-select drag). Disable selection
+   site-wide instead; browsers still allow long-press/context-menu actions,
+   they just won't start a text selection off a plain tap. */
+html {
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
   user-select: none;
   touch-action: manipulation;
 }
