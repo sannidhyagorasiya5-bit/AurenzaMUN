@@ -66,7 +66,7 @@ export function SocialMedia() {
               <Reveal key={p.name} delay={i * 0.1}>
                 <TiltCard
                   accent={accent}
-                  className="relative flex h-full items-center gap-6 p-7"
+                  className="relative flex h-full flex-col items-center gap-4 p-6 text-center sm:flex-row sm:items-center sm:gap-6 sm:p-7 sm:text-left"
                 >
                   <a
                     href={p.href}
@@ -80,8 +80,8 @@ export function SocialMedia() {
                     {icons[p.name]}
                   </div>
 
-                  <div className="flex min-w-0 flex-col">
-                    <Pill accent={accent} variant="outline" className="self-start">
+                  <div className="flex min-w-0 flex-col items-center sm:items-start">
+                    <Pill accent={accent} variant="outline" className="self-center sm:self-start">
                       {p.name}
                     </Pill>
                     <p className="mt-3 break-words font-display text-xl font-bold tracking-tight">
