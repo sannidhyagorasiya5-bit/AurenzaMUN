@@ -80,11 +80,11 @@ export function SocialMedia() {
                     {icons[p.name]}
                   </div>
 
-                  <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-col">
                     <Pill accent={accent} variant="outline" className="self-start">
                       {p.name}
                     </Pill>
-                    <p className="mt-3 font-display text-xl font-bold tracking-tight">
+                    <p className="mt-3 break-words font-display text-xl font-bold tracking-tight">
                       {p.handle}
                     </p>
                     <span className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-muted">

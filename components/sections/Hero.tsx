@@ -91,7 +91,7 @@ export function Hero() {
         </div>
 
         {/* right: floating generative cards */}
-        <div className="relative hidden h-[26rem] lg:block">
+        <div className="relative mt-4 h-72 sm:h-96 lg:mt-0 lg:h-[26rem]">
           <a
             href={hero.venueMapUrl}
             target="_blank"
@@ -104,7 +104,7 @@ export function Hero() {
               alt="SVIS Kandivali, Mumbai"
               fill
               className="object-cover"
-              sizes="(min-width: 1024px) 40vw, 0px"
+              sizes="(min-width: 1024px) 40vw, 100vw"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-brand/20 via-transparent to-blue/20" />
           </a>
@@ -167,7 +167,7 @@ function FloatingCard({
       initial={reduce ? {} : { opacity: 0, scale: 0.9 }}
       animate={reduce ? {} : { opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: EASE, delay }}
-      className={`absolute w-52 ${className}`}
+      className={`absolute w-40 sm:w-52 ${className}`}
     >
       <div
         className="glass animate-float rounded-2xl p-5"

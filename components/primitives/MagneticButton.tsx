@@ -55,7 +55,7 @@ export function MagneticButton({
   const disabled = variant === "disabled";
   const magnetic = !reduce && !disabled;
 
-  function handleMove(e: React.MouseEvent) {
+  function handleMove(e: React.PointerEvent) {
     if (!magnetic || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     x.set((e.clientX - (rect.left + rect.width / 2)) * strength);
@@ -86,8 +86,11 @@ export function MagneticButton({
     ref: ref as never,
     className: `${base} ${variantClass[variant]} ${className}`,
     style: { x: sx, y: sy },
-    onMouseMove: handleMove,
-    onMouseLeave: reset,
+    onPointerMove: handleMove,
+    onPointerDown: handleMove,
+    onPointerUp: reset,
+    onPointerCancel: reset,
+    onPointerLeave: reset,
     whileTap: disabled ? undefined : { scale: 0.94 },
     "aria-label": ariaLabel,
   };

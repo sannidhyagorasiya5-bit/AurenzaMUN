@@ -38,7 +38,7 @@ export function TiltCard({
 
   const tilt = interactive && !reduce;
 
-  function handleMove(e: React.MouseEvent) {
+  function handleMove(e: React.PointerEvent) {
     if (!tilt || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
@@ -55,8 +55,11 @@ export function TiltCard({
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={reset}
+      onPointerMove={handleMove}
+      onPointerDown={handleMove}
+      onPointerUp={reset}
+      onPointerCancel={reset}
+      onPointerLeave={reset}
       style={
         tilt
           ? { rotateX: srx, rotateY: sry, transformPerspective: 900 }
