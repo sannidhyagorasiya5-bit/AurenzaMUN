@@ -61,6 +61,21 @@ section[id] {
   scroll-margin-top: 6rem;
 }
 
+/* Interactive controls (buttons, links, tabs) shouldn't highlight/select on
+   tap — a normal tap's tiny finger movement was being read as a text-select
+   drag on touch, especially on pointer-tracking components like TiltCard
+   and MagneticButton. Plain text content is untouched, so it still selects
+   normally on double-tap / long-press. */
+a,
+button,
+[role="button"],
+[role="tab"] {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
 ::selection {
   background: var(--brand);
   color: var(--brand-fg);
