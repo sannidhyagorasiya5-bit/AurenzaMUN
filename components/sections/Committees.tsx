@@ -25,16 +25,6 @@ export function Committees() {
   const reduce = useReducedMotion();
   type TrackId = (typeof committees.tracks)[number]["id"];
   const [active, setActive] = useState<TrackId>(committees.tracks[0].id);
-  const [flipped, setFlipped] = useState<Set<string>>(() => new Set());
-
-  function toggleFlip(abbr: string) {
-    setFlipped((prev) => {
-      const next = new Set(prev);
-      if (next.has(abbr)) next.delete(abbr);
-      else next.add(abbr);
-      return next;
-    });
-  }
 
   const tabs: TabItem[] = committees.tracks.map((t) => ({
     id: t.id,
@@ -88,89 +78,26 @@ export function Committees() {
           >
             {track.committees.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {track.committees.map((c, i) => {
-                  const isFlipped = flipped.has(c.abbr);
-                  return (
-                    <motion.div
-                      key={c.abbr}
-                      initial={reduce ? {} : { opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, ease: EASE, delay: i * 0.07 }}
-                      className="h-full"
-                      style={{ perspective: 1200 }}
-                    >
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        aria-pressed={isFlipped}
-                        aria-label={`${c.abbr}, ${isFlipped ? "showing agenda status, press to flip back" : "press to reveal agenda status"}`}
-                        onClick={() => toggleFlip(c.abbr)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            toggleFlip(c.abbr);
-                          }
-                        }}
-                        className="relative h-full cursor-pointer rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                {track.committees.map((c, i) => (
+                  <motion.div
+                    key={c.abbr}
+                    initial={reduce ? {} : { opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: EASE, delay: i * 0.07 }}
+                  >
+                    <TiltCard accent={track.accent} className="h-full p-7">
+                      <span
+                        className={`font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentText[track.accent]}`}
                       >
-                        <motion.div
-                          className="relative h-full"
-                          style={{
-                            transformStyle: "preserve-3d",
-                            WebkitTransformStyle: "preserve-3d",
-                          }}
-                          animate={{ rotateY: isFlipped ? 180 : 0 }}
-                          transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
-                        >
-                          <div
-                            aria-hidden={isFlipped}
-                            style={{
-                              backfaceVisibility: "hidden",
-                              WebkitBackfaceVisibility: "hidden",
-                            }}
-                            className={isFlipped ? "pointer-events-none" : ""}
-                          >
-                            <TiltCard
-                              accent={track.accent}
-                              interactive={!isFlipped}
-                              className="h-full p-7"
-                            >
-                              <span
-                                className={`font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentText[track.accent]}`}
-                              >
-                                {c.agenda}
-                              </span>
-                              <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
-                                {c.abbr}
-                              </h3>
-                              <p className="mt-3 text-sm leading-relaxed text-muted">
-                                {c.name}
-                              </p>
-                            </TiltCard>
-                          </div>
-                          <div
-                            aria-hidden={!isFlipped}
-                            style={{
-                              backfaceVisibility: "hidden",
-                              WebkitBackfaceVisibility: "hidden",
-                              transform: "rotateY(180deg)",
-                            }}
-                            className={`absolute inset-0 ${!isFlipped ? "pointer-events-none" : ""}`}
-                          >
-                            <div className="glass flex h-full flex-col items-center justify-center rounded-3xl p-7 text-center">
-                              <span
-                                className={`h-2.5 w-2.5 rounded-full ${accentDot[track.accent]}`}
-                              />
-                              <p className="mt-4 text-sm leading-relaxed text-muted">
-                                Agenda will be announced soon
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                        {c.agenda}
+                      </span>
+                      <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
+                        {c.abbr}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
+                    </TiltCard>
+                  </motion.div>
+                ))}
               </div>
             ) : (
               <div className="glass flex flex-col items-center justify-center rounded-3xl border-dashed px-8 py-20 text-center">
