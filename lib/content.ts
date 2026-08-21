@@ -63,8 +63,7 @@ export type Track = {
 export const committees = {
   eyebrow: "11 COMMITTEES · 3 TRACKS",
   heading: ["CHOOSE YOUR", "COMMITTEE"] as [string, string],
-  description:
-    "Agendas will be announced soon. Select a track to explore the committees available for delegation.",
+  description: "Click or tap the panels to reveal agendas.",
   tracks: [
     {
       id: "school",
