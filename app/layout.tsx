@@ -21,11 +21,11 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "AurenzaMUN — Model United Nations · SVIS Kandivali",
   description:
-    "AurenzaMUN is a premier Model United Nations conference bringing together student diplomats from across Mumbai. 10 & 11 October 2026 · SVIS Kandivali. Debate, collaborate, and resolve the world's toughest challenges.",
+    "AurenzaMUN is a Premier Model United Nations Conference Bringing Together Student Diplomats From Across Mumbai. 10 & 11 October 2026 · SVIS Kandivali. Debate, collaborate, and resolve the world's toughest challenges.",
   openGraph: {
     title: "AurenzaMUN — Model United Nations",
     description:
-      "A premier Model United Nations conference for student diplomats across Mumbai. 10 & 11 October 2026 · SVIS Kandivali.",
+      "A Premier Model United Nations Conference For Student Diplomats Across Mumbai. 10 & 11 October 2026 · SVIS Kandivali.",
     type: "website",
   },
 };
