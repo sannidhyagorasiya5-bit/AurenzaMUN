@@ -8,11 +8,13 @@ import { Secretariat } from "@/components/sections/Secretariat";
 import { Resources } from "@/components/sections/Resources";
 import { SocialMedia } from "@/components/sections/SocialMedia";
 import { Marquee } from "@/components/primitives/Marquee";
+import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { hero } from "@/lib/content";
 
 export default function Home() {
   return (
     <>
+      <GenerativeBackground variant="hero" fixed />
       <SiteHeader />
       <main className="flex-1">
         <Hero />

@@ -7,9 +7,14 @@
  */
 export function GenerativeBackground({
   variant = "section",
+  fixed = false,
   className = "",
 }: {
   variant?: "hero" | "section";
+  /** Pin to the viewport instead of the nearest positioned section, so the
+   * glow + grid read as one continuous backdrop that content scrolls over
+   * rather than a pattern that restarts at every section boundary. */
+  fixed?: boolean;
   className?: string;
 }) {
   const hero = variant === "hero";
@@ -28,7 +33,7 @@ export function GenerativeBackground({
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden ${className}`}
+      className={`pointer-events-none ${fixed ? "fixed" : "absolute"} inset-0 -z-10 overflow-hidden ${className}`}
     >
       {/* aurora glow — non-blurred radial gradients */}
       <div className="absolute inset-0" style={{ backgroundImage: glow }} />
@@ -43,6 +48,9 @@ export function GenerativeBackground({
           maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
         }}
       />
+
+      {/* tiny darkening tint over the whole backdrop */}
+      <div className="absolute inset-0 bg-black/10" />
     </div>
   );
 }

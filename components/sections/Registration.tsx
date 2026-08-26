@@ -1,7 +1,6 @@
 "use client";
 
 import { registration } from "@/lib/content";
-import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
@@ -14,8 +13,6 @@ export function Registration() {
       aria-labelledby="register-heading"
       className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"
     >
-      <GenerativeBackground />
-
       <div className="mx-auto max-w-6xl">
         <div id="register-heading">
           <SectionIntro
