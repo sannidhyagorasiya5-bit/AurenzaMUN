@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { committees, type Accent, type Track } from "@/lib/content";
 import { EASE } from "@/lib/motion";
+import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
@@ -42,6 +43,8 @@ export function Committees() {
       aria-labelledby="committees-heading"
       className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"
     >
+      <GenerativeBackground />
+
       <div className="mx-auto max-w-6xl">
         <div id="committees-heading">
           <SectionIntro

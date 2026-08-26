@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EASE } from "@/lib/motion";
+import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { Reveal } from "@/components/primitives/Reveal";
 
@@ -54,6 +55,8 @@ export function Countdown() {
       aria-labelledby="countdown-heading"
       className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"
     >
+      <GenerativeBackground />
+
       <div className="mx-auto max-w-6xl">
         <div id="countdown-heading">
           <SectionIntro

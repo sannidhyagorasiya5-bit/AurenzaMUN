@@ -6,6 +6,7 @@ import { hero } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { AnimatedHeading } from "@/components/primitives/AnimatedHeading";
 import { CountUp } from "@/components/primitives/CountUp";
+import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { Pill } from "@/components/primitives/Pill";
 
@@ -27,6 +28,8 @@ export function Hero() {
       aria-label="AurenzaMUN introduction"
       className="relative flex min-h-screen items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8"
     >
+      <GenerativeBackground variant="hero" />
+
       <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
         {/* left: copy */}
         <div>

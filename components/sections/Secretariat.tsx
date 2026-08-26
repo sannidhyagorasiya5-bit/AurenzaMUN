@@ -1,6 +1,7 @@
 "use client";
 
 import { secretariat } from "@/lib/content";
+import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { Pill } from "@/components/primitives/Pill";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
@@ -13,6 +14,8 @@ export function Secretariat() {
       aria-labelledby="crew-heading"
       className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"
     >
+      <GenerativeBackground />
+
       <div className="mx-auto max-w-6xl">
         <div id="crew-heading">
           <SectionIntro
