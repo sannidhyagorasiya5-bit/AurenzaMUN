@@ -12,6 +12,7 @@ export const site = {
 } as const;
 
 export const nav = [
+  { label: "COUNTDOWN", href: "#countdown" },
   { label: "COMMITTEES", href: "#committees" },
   { label: "REGISTER", href: "#register" },
   { label: "CREW", href: "#crew" },

@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Hero } from "@/components/sections/Hero";
+import { Countdown } from "@/components/sections/Countdown";
 import { Committees } from "@/components/sections/Committees";
 import { Registration } from "@/components/sections/Registration";
 import { Secretariat } from "@/components/sections/Secretariat";
@@ -18,6 +19,7 @@ export default function Home() {
         <div className="border-y border-border-glass py-6">
           <Marquee items={[...hero.marquee]} />
         </div>
+        <Countdown />
         <Committees />
         <Registration />
         <Secretariat />
