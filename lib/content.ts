@@ -176,9 +176,9 @@ export const secretariat = {
     },
     {
       name: "Arnav Bohra",
-      role: "CHAIRPERSON",
-      subtitle: "CHAIRPERSON · AURENZAMUN",
-      bio: "As Chairperson, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
+      role: "DIRECTOR GENERAL",
+      subtitle: "DIRECTOR GENERAL · AURENZAMUN",
+      bio: "As Director General, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
     },
   ],
   footnote: "More core committee members will be announced soon",
