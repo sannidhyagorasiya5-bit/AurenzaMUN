@@ -81,7 +81,11 @@ export const committees = {
           name: "National Institution for Transforming India",
           agenda: "Agenda to be announced",
         },
-        { abbr: "MAHABHARATA", name: "Mahabharata", agenda: "Agenda to be announced" },
+        {
+          abbr: "MAHABHARATA",
+          name: "A committee set on Mahabharata.",
+          agenda: "Agenda to be announced",
+        },
       ],
     },
     {
@@ -102,7 +106,7 @@ export const committees = {
           name: "United Nations Human Rights Council",
           agenda: "Agenda to be announced",
         },
-        { abbr: "CCC", name: "Continuous Crisis Committee", agenda: "Agenda to be announced" },
+        { abbr: "C.C.C", name: "Continuous Crisis Committee", agenda: "Agenda to be announced" },
       ],
     },
     {
