@@ -15,7 +15,7 @@ export const nav = [
   { label: "COUNTDOWN", href: "#countdown" },
   { label: "COMMITTEES", href: "#committees" },
   { label: "REGISTER", href: "#register" },
-  { label: "CREW", href: "#crew" },
+  { label: "C.C", href: "#crew" },
   { label: "RESOURCES", href: "#resources" },
   { label: "CONTACT US", href: "#social" },
 ] as const;
@@ -30,7 +30,7 @@ export const hero = {
   ctaPrimary: "REGISTER AS DELEGATE",
   ctaSecondary: "EXPLORE COMMITTEES",
   stats: [
-    { value: 11, label: "COMMITTEES" },
+    { value: 13, label: "COMMITTEES" },
     { value: 2, label: "DAYS OF DEBATE" },
     { value: 400, label: "DELEGATES", suffix: "+" },
   ],
@@ -39,7 +39,7 @@ export const hero = {
     { label: "VENUE", value: "SVIS Kandivali, Mumbai" },
   ],
   marquee: [
-    "11 COMMITTEES",
+    "13 COMMITTEES",
     "2 DAYS OF DEBATE",
     "SVIS KANDIVALI",
     "MODEL UNITED NATIONS",
@@ -62,7 +62,7 @@ export type Track = {
 };
 
 export const committees = {
-  eyebrow: "11 COMMITTEES · 3 TRACKS",
+  eyebrow: "13 COMMITTEES · 3 TRACKS",
   heading: ["CHOOSE YOUR", "COMMITTEE"] as [string, string],
   description:
     "Agendas will be announced soon. Select a track to explore the committees available for delegation.",
@@ -81,6 +81,7 @@ export const committees = {
           name: "National Institution for Transforming India",
           agenda: "Agenda to be announced",
         },
+        { abbr: "MAHABHARATA", name: "Mahabharata", agenda: "Agenda to be announced" },
       ],
     },
     {
@@ -101,6 +102,7 @@ export const committees = {
           name: "United Nations Human Rights Council",
           agenda: "Agenda to be announced",
         },
+        { abbr: "CCC", name: "Continuous Crisis Committee", agenda: "Agenda to be announced" },
       ],
     },
     {
@@ -158,9 +160,9 @@ export const registration = {
 
 export const secretariat = {
   eyebrow: "LEADERSHIP TEAM",
-  heading: ["MEET THE", "CREW"] as [string, string],
+  heading: ["CORE", "COMMITTEE"] as [string, string],
   description:
-    "AurenzaMUN is guided by a dedicated crew committed to delivering an exceptional conference experience.",
+    "AurenzaMUN is guided by a dedicated core committee committed to delivering an exceptional conference experience.",
   members: [
     {
       name: "Ruqaiyah Bharmal",
@@ -174,14 +176,8 @@ export const secretariat = {
       subtitle: "CHAIRPERSON · AURENZAMUN",
       bio: "As Chairperson, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
     },
-    {
-      name: "Sannidhya Gorasiya",
-      role: "DEVELOPER",
-      subtitle: "DEVELOPER · AURENZAMUN",
-      bio: "Sannidhya designed and built the AurenzaMUN website, with hours of palm sweat and typing, bringing the site to life as you're reading this.",
-    },
   ],
-  footnote: "More crew members will be announced soon",
+  footnote: "More core committee members will be announced soon",
 } as const;
 
 export const resources = {
