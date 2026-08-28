@@ -28,6 +28,10 @@ export const metadata: Metadata = {
       "A Premier Model United Nations Conference For Student Diplomats Across Mumbai. 10 & 11 October 2026 · SVIS Kandivali.",
     type: "website",
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {
