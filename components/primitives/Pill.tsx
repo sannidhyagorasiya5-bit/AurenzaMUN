@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Accent } from "@/lib/content";
 
-type PillVariant = "solid" | "outline" | "dashed";
+type PillVariant = "solid" | "outline" | "dashed" | "ghost";
 
 /* Blue/ice pills are light chips carrying midnight-blue text, which is the
    only way that navy stays legible on this near-black page. Gold keeps the
@@ -51,6 +51,8 @@ export function Pill({
     solid: `${accentSolid[accent]} border border-transparent`,
     outline: `border ${accentOutline[accent]}`,
     dashed: `border border-dashed ${accentBorder[accent]} text-muted`,
+    /* Ghost-white plate for accents that have no light chip of their own. */
+    ghost: "border border-transparent bg-foreground text-background",
   };
 
   return (

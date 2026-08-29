@@ -15,7 +15,7 @@ export const nav = [
   { label: "COUNTDOWN", href: "#countdown" },
   { label: "COMMITTEES", href: "#committees" },
   { label: "REGISTER", href: "#register" },
-  { label: "C.C", href: "#crew" },
+  { label: "TEAM", href: "#crew" },
   { label: "RESOURCES", href: "#resources" },
   { label: "CONTACT US", href: "#social" },
 ] as const;
@@ -476,10 +476,10 @@ export const registration = {
 } as const;
 
 export const secretariat = {
-  eyebrow: "LEADERSHIP TEAM",
-  heading: ["CORE", "COMMITTEE"] as [string, string],
+  eyebrow: "LEADERSHIP",
+  heading: ["MEET THE", "TEAM"] as [string, string],
   description:
-    "AurenzaMUN is guided by a dedicated core committee committed to delivering an exceptional conference experience.",
+    "AurenzaMUN is guided by a dedicated team committed to delivering an exceptional conference experience.",
   members: [
     {
       name: "Ruqaiyah Bharmal",
@@ -494,7 +494,7 @@ export const secretariat = {
       bio: "As Director General, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
     },
   ],
-  footnote: "More core committee members will be announced soon",
+  footnote: "More team members will be announced soon",
 } as const;
 
 export const resources = {

@@ -81,7 +81,14 @@ export function SocialMedia() {
                   </div>
 
                   <div className="flex min-w-0 flex-col items-center sm:items-start">
-                    <Pill accent={accent} variant="outline" className="self-center sm:self-start">
+                    {/* Gold has no light chip of its own, so its label floated
+                        on the card while the blue/ice ones sat on a plate.
+                        The ghost-white chip puts it on the same footing. */}
+                    <Pill
+                      accent={accent}
+                      variant={accent === "gold" ? "ghost" : "outline"}
+                      className="self-center sm:self-start"
+                    >
                       {p.name}
                     </Pill>
                     <p className="mt-3 break-words font-display text-xl font-bold tracking-tight">

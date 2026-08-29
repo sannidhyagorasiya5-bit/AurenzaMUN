@@ -6,7 +6,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import type { Accent, Committee } from "@/lib/content";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
-import { Pill } from "@/components/primitives/Pill";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 
 const accentEmblem: Record<Accent, string> = {
@@ -182,12 +181,9 @@ export function CommitteeModal({
             </div>
 
             <div className="min-w-0">
-              <Pill accent={accent} variant="solid">
-                {committee.kind}
-              </Pill>
               <h3
                 id={titleId}
-                className="mt-2 font-display text-2xl font-bold uppercase leading-none tracking-tight sm:text-3xl"
+                className="font-display text-2xl font-bold uppercase leading-none tracking-tight sm:text-3xl"
               >
                 {committee.abbr}
               </h3>

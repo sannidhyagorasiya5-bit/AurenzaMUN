@@ -78,9 +78,7 @@ export function Hero() {
           <motion.dl className="mt-12 flex flex-wrap gap-6 sm:flex-nowrap sm:gap-12" {...fade(0.8)}>
             {hero.stats.map((s) => (
               <div key={s.label} className="text-center">
-                {/* Numerals sit on a light plate so they can be midnight blue
-                    instead of the light blue that used to float on the page. */}
-                <dd className="inline-block whitespace-nowrap rounded-2xl bg-blue-chip px-4 py-1.5 font-display text-4xl font-bold tabular-nums text-blue-deep sm:px-5 sm:text-6xl">
+                <dd className="inline-block whitespace-nowrap font-display text-4xl font-bold tabular-nums text-blue sm:text-6xl">
                   <CountUp to={s.value} duration={5} />
                   {"suffix" in s ? s.suffix : ""}
                 </dd>
