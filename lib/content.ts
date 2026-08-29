@@ -66,7 +66,6 @@ export const committees = {
   heading: ["CHOOSE YOUR", "COMMITTEE"] as [string, string],
   description:
     "Agendas will be announced soon. Select a track to explore the committees available for delegation.",
-  note: "Click the panels of the committee for the characters",
   tracks: [
     {
       id: "school",

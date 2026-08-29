@@ -4,11 +4,9 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { committees, type Accent, type Track } from "@/lib/content";
 import { EASE } from "@/lib/motion";
-import { FlipCard } from "@/components/primitives/FlipCard";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
-import { PortfolioMatrix } from "@/components/primitives/PortfolioMatrix";
-import { Reveal } from "@/components/primitives/Reveal";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
+import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 
 const accentText: Record<Accent, string> = {
@@ -22,8 +20,6 @@ const accentDot: Record<Accent, string> = {
   gold: "bg-brand",
   ice: "bg-ice",
 };
-
-const eyebrow = "font-mono text-[0.7rem] uppercase tracking-[0.2em]";
 
 export function Committees() {
   const reduce = useReducedMotion();
@@ -56,11 +52,7 @@ export function Committees() {
             heading={committees.heading}
             description={committees.description}
             accent="blue"
-          >
-            <Reveal delay={0.15}>
-              <p className={`mt-4 text-brand ${eyebrow}`}>{committees.note}</p>
-            </Reveal>
-          </SectionIntro>
+          />
         </div>
 
         <div className="mt-10">
@@ -93,39 +85,17 @@ export function Committees() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: EASE, delay: i * 0.07 }}
                   >
-                    <FlipCard
-                      accent={track.accent}
-                      frontLabel={`${c.abbr} — show the portfolio matrix`}
-                      backLabel={`${c.abbr} portfolio matrix — back to committee details`}
-                      front={
-                        <>
-                          <span className={`${eyebrow} ${accentText[track.accent]}`}>
-                            {c.agenda}
-                          </span>
-                          <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
-                            {c.abbr}
-                          </h3>
-                          <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
-                          <span className={`mt-auto pt-6 text-muted/70 ${eyebrow}`}>
-                            Click for portfolios
-                          </span>
-                        </>
-                      }
-                      back={
-                        <>
-                          <span className={`${eyebrow} ${accentText[track.accent]}`}>
-                            Portfolio Matrix
-                          </span>
-                          <h3 className="mt-2 mb-4 font-display text-lg font-bold uppercase leading-none tracking-tight">
-                            {c.abbr}
-                          </h3>
-                          <PortfolioMatrix />
-                          <span className={`mt-3 text-muted/70 ${eyebrow}`}>
-                            To be announced
-                          </span>
-                        </>
-                      }
-                    />
+                    <TiltCard accent={track.accent} className="h-full p-7">
+                      <span
+                        className={`font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentText[track.accent]}`}
+                      >
+                        {c.agenda}
+                      </span>
+                      <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
+                        {c.abbr}
+                      </h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
+                    </TiltCard>
                   </motion.div>
                 ))}
               </div>
