@@ -7,16 +7,18 @@
   color-scheme: dark;
 
   --background: #06080f; /* black with a faint blue cast */
-  --foreground: #191970; /* midnight blue */
-  --muted: #191970; /* midnight blue */
+  --foreground: #f8f8ff; /* ghost white */
+  --muted: #99a3ba; /* cool grey */
 
   --brand: #e7c25a; /* GOLD — lead/primary (buttons, wordmark, headings) */
-  --brand-fg: #191970; /* midnight blue */
+  --brand-fg: #06080f; /* near-black text on gold */
   --blue: #4c8dff; /* blue — highlights + School track */
   --ice: #a9c4f5; /* ice-blue — IP track */
 
-  /* Every text tone is midnight blue by explicit request. The light
-     --blue/--ice above still drive borders, dots and gradient glows. */
+  /* Accent *text* only — the light --blue/--ice above still drive borders,
+     dots and gradient glows. Set to true midnight blue at explicit request:
+     ~1.4:1 against the near-black background, so this is well under WCAG AA
+     and is meant to be hard to read. */
   --blue-deep: #191970;
   --ice-deep: #191970;
 
@@ -61,17 +63,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
-}
-
-/* Every piece of text on the site is midnight blue, no exceptions. This beats
-   the per-element Tailwind text-* utilities scattered through the components,
-   so there's no need to hunt them down one by one. SVGs are excluded so the
-   currentColor-driven social icons keep their own stroke colour. */
-*:not(svg):not(svg *),
-*:not(svg):not(svg *)::before,
-*:not(svg):not(svg *)::after {
-  color: #191970 !important;
-  -webkit-text-fill-color: #191970 !important;
 }
 
 /* Sticky-header offset for anchor navigation */
