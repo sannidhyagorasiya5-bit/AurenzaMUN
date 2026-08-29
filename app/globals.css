@@ -16,11 +16,12 @@
   --ice: #a9c4f5; /* ice-blue — IP track */
 
   /* Deep midnight-blue text tones. Accent *text* only — the light --blue/--ice
-     above still drive borders, dots and gradient glows. Kept just light enough
-     to clear WCAG AA (~4.8:1 and ~5.1:1) against the near-black background;
-     a true midnight blue would be invisible here. */
-  --blue-deep: #5479cf;
-  --ice-deep: #6480bf;
+     above still drive borders, dots and gradient glows. Pushed as dark as the
+     near-black background tolerates: ~3.7:1 and ~4.3:1 contrast, which clears
+     WCAG AA for the large/bold accent text but sits under it for the small
+     pill labels. Going further reads as unlit navy on black. */
+  --blue-deep: #3f66bb;
+  --ice-deep: #5b74a8;
 
   --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.06);
