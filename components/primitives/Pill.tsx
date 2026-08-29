@@ -4,9 +4,9 @@ import type { Accent } from "@/lib/content";
 type PillVariant = "solid" | "outline" | "dashed";
 
 const accentText: Record<Accent, string> = {
-  blue: "text-blue",
+  blue: "text-blue-deep",
   gold: "text-brand",
-  ice: "text-ice",
+  ice: "text-ice-deep",
 };
 
 const accentBorder: Record<Accent, string> = {
