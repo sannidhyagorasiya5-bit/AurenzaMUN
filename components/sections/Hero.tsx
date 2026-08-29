@@ -44,7 +44,7 @@ export function Hero() {
               aria-label={`${hero.badges[1]} — open in Google Maps`}
               className="transition-opacity hover:opacity-80"
             >
-              <Pill accent="blue" dot className="cursor-pointer underline decoration-blue-deep/50 underline-offset-4 hover:decoration-blue-deep">
+              <Pill accent="blue" dot className="cursor-pointer underline decoration-blue/40 underline-offset-4 hover:decoration-blue">
                 {hero.badges[1]}
               </Pill>
             </a>
@@ -78,7 +78,7 @@ export function Hero() {
           <motion.dl className="mt-12 flex flex-wrap gap-6 sm:flex-nowrap sm:gap-12" {...fade(0.8)}>
             {hero.stats.map((s) => (
               <div key={s.label} className="text-center">
-                <dd className="whitespace-nowrap font-display text-4xl font-bold tabular-nums text-blue-deep sm:text-6xl">
+                <dd className="whitespace-nowrap font-display text-4xl font-bold tabular-nums text-blue sm:text-6xl">
                   <CountUp to={s.value} duration={5} />
                   {"suffix" in s ? s.suffix : ""}
                 </dd>

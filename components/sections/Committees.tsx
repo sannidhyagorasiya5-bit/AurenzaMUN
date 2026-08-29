@@ -10,9 +10,9 @@ import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 
 const accentText: Record<Accent, string> = {
-  blue: "text-blue-deep",
+  blue: "text-blue",
   gold: "text-brand",
-  ice: "text-ice-deep",
+  ice: "text-ice",
 };
 
 const accentDot: Record<Accent, string> = {

@@ -11,9 +11,9 @@ export type TabItem = {
 };
 
 const accentActiveText: Record<Accent, string> = {
-  blue: "text-blue-deep",
+  blue: "text-blue",
   gold: "text-brand",
-  ice: "text-ice-deep",
+  ice: "text-ice",
 };
 
 const accentPill: Record<Accent, string> = {

@@ -13,8 +13,8 @@ const accents: Accent[] = ["gold", "blue", "ice"];
 
 const iconText: Record<Accent, string> = {
   gold: "text-brand",
-  blue: "text-blue-deep",
-  ice: "text-ice-deep",
+  blue: "text-blue",
+  ice: "text-ice",
 };
 
 const icons: Record<string, ReactNode> = {

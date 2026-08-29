@@ -15,13 +15,6 @@
   --blue: #4c8dff; /* blue — highlights + School track */
   --ice: #a9c4f5; /* ice-blue — IP track */
 
-  /* Accent *text* only — the light --blue/--ice above still drive borders,
-     dots and gradient glows. Set to true midnight blue at explicit request:
-     ~1.4:1 against the near-black background, so this is well under WCAG AA
-     and is meant to be hard to read. */
-  --blue-deep: #191970;
-  --ice-deep: #191970;
-
   --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.06);
   --border-glass: rgba(255, 255, 255, 0.1);
@@ -36,8 +29,6 @@
   --color-brand-fg: var(--brand-fg);
   --color-blue: var(--blue);
   --color-ice: var(--ice);
-  --color-blue-deep: var(--blue-deep);
-  --color-ice-deep: var(--ice-deep);
 
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
