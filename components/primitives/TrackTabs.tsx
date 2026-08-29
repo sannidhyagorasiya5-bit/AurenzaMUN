@@ -10,16 +10,18 @@ export type TabItem = {
   accent: Accent;
 };
 
+/* The active blue/ice tab fills with a light chip so its label can be true
+   midnight blue and still read at 10:1. */
 const accentActiveText: Record<Accent, string> = {
-  blue: "text-blue",
+  blue: "text-blue-deep",
   gold: "text-brand",
-  ice: "text-ice",
+  ice: "text-ice-deep",
 };
 
 const accentPill: Record<Accent, string> = {
-  blue: "bg-blue/15 border-blue/40",
+  blue: "bg-blue-chip border-blue-chip",
   gold: "bg-brand/15 border-brand/40",
-  ice: "bg-ice/15 border-ice/40",
+  ice: "bg-ice-chip border-ice-chip",
 };
 
 /**

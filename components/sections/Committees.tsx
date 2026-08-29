@@ -9,10 +9,12 @@ import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 
-const accentText: Record<Accent, string> = {
-  blue: "text-blue",
-  gold: "text-brand",
-  ice: "text-ice",
+/* Agenda tags render as chips so the blue/ice ones can carry midnight-blue
+   text at 10:1; gold keeps its own tint, which already reads on the card. */
+const accentTag: Record<Accent, string> = {
+  blue: "bg-blue-chip text-blue-deep",
+  gold: "bg-brand/15 text-brand",
+  ice: "bg-ice-chip text-ice-deep",
 };
 
 const accentDot: Record<Accent, string> = {
@@ -87,7 +89,7 @@ export function Committees() {
                   >
                     <TiltCard accent={track.accent} className="h-full p-7">
                       <span
-                        className={`font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentText[track.accent]}`}
+                        className={`inline-block rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
                       >
                         {c.agenda}
                       </span>

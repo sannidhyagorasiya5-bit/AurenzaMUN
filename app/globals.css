@@ -15,6 +15,15 @@
   --blue: #4c8dff; /* blue — highlights + School track */
   --ice: #a9c4f5; /* ice-blue — IP track */
 
+  /* Midnight-blue accent text. Dark navy is invisible on the near-black
+     background (#191970 vs --background is ~1.4:1), so it only ever gets
+     painted on the light chips below, where it clears 10:1. The light
+     --blue/--ice above still drive borders, dots and gradient glows. */
+  --blue-deep: #191970; /* midnight blue — 11.7:1 on --blue-chip */
+  --ice-deep: #20306e; /* deep navy — 10.7:1 on --ice-chip */
+  --blue-chip: #dbe4f7;
+  --ice-chip: #eaf0fc;
+
   --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.06);
   --border-glass: rgba(255, 255, 255, 0.1);
@@ -29,6 +38,10 @@
   --color-brand-fg: var(--brand-fg);
   --color-blue: var(--blue);
   --color-ice: var(--ice);
+  --color-blue-deep: var(--blue-deep);
+  --color-ice-deep: var(--ice-deep);
+  --color-blue-chip: var(--blue-chip);
+  --color-ice-chip: var(--ice-chip);
 
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
