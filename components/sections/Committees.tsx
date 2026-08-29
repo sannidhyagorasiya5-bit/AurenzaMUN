@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { committees, type Accent, type Track } from "@/lib/content";
+import { committees, type Accent, type Committee, type Track } from "@/lib/content";
 import { EASE } from "@/lib/motion";
+import { CommitteeModal } from "@/components/primitives/CommitteeModal";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
@@ -23,10 +24,17 @@ const accentDot: Record<Accent, string> = {
   ice: "bg-ice",
 };
 
+const accentLink: Record<Accent, string> = {
+  blue: "text-blue",
+  gold: "text-brand",
+  ice: "text-ice",
+};
+
 export function Committees() {
   const reduce = useReducedMotion();
   type TrackId = (typeof committees.tracks)[number]["id"];
   const [active, setActive] = useState<TrackId>(committees.tracks[0].id);
+  const [open, setOpen] = useState<Committee | null>(null);
 
   const tabs: TabItem[] = committees.tracks.map((t) => ({
     id: t.id,
@@ -56,6 +64,10 @@ export function Committees() {
             accent="blue"
           />
         </div>
+
+        <p className="mt-4 max-w-2xl font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted">
+          {committees.note}
+        </p>
 
         <div className="mt-10">
           <TrackTabs
@@ -87,9 +99,21 @@ export function Committees() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: EASE, delay: i * 0.07 }}
                   >
-                    <TiltCard accent={track.accent} className="h-full p-7">
+                    <TiltCard
+                      accent={track.accent}
+                      className="relative flex h-full flex-col p-7"
+                    >
+                      {/* The whole panel opens the dialog; the button sits on
+                          top so the card keeps its pointer tilt underneath. */}
+                      <button
+                        type="button"
+                        onClick={() => setOpen(c)}
+                        aria-label={`${c.abbr} — view agenda and portfolios`}
+                        className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
+                      />
+
                       <span
-                        className={`inline-block rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
+                        className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
                       >
                         {c.agenda}
                       </span>
@@ -97,6 +121,24 @@ export function Committees() {
                         {c.abbr}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
+
+                      <span
+                        className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[track.accent]}`}
+                        aria-hidden
+                      >
+                        View details
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-3 w-3"
+                        >
+                          <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                      </span>
                     </TiltCard>
                   </motion.div>
                 ))}
@@ -112,6 +154,18 @@ export function Committees() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {open ? (
+          <CommitteeModal
+            key={open.abbr}
+            committee={open}
+            accent={track.accent}
+            portfolioNote={committees.portfolioNote}
+            onClose={() => setOpen(null)}
+          />
+        ) : null}
+      </AnimatePresence>
     </section>
   );
 }
