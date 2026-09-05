@@ -52,8 +52,6 @@ export type Committee = {
   name: string;
   /** One entry per agenda — a few committees run more than one. */
   agenda: readonly string[];
-  /** Small tag shown beside the title in the detail dialog. */
-  kind: string;
   description: string;
   /** Rendered as the two-column "KEY FOCUS AREAS" list. */
   focus: string[];
@@ -95,7 +93,6 @@ export const committees = {
           abbr: "MARVEL",
           name: "Marvel Crisis Committee",
           agenda: ["The rise of Doctor Doom and the threats to global security."],
-          kind: "CRISIS",
           description:
             "A fast-moving crisis committee set in the Marvel universe. Delegates take on the powers, allegiances and grudges of iconic heroes and villains while an escalating threat forces the room to negotiate under pressure.",
           focus: [
@@ -121,7 +118,6 @@ export const committees = {
             "Should criminals holding severe crimes still be allowed to contest for elections?",
             "Electoral and political reforms in India: strengthening political funding transparency, electoral accountability and the integrity of the democratic process.",
           ],
-          kind: "SPECIALIZED",
           description:
             "The All India Political Parties Meet puts leaders from across the political spectrum in one room. Delegates argue as sitting politicians, defending a party line in public while searching for a consensus the country can actually live with.",
           focus: [
@@ -150,7 +146,6 @@ export const committees = {
           agenda: [
             "The accountability stances of countries acting in active conflict zones when ISIL/Da’esh and other terrorist organizations pose serious threats.",
           ],
-          kind: "MUN",
           description:
             "The Security Council carries primary responsibility for international peace and security. Fifteen members debate under the shadow of the veto, where a single vote decides whether the Council acts at all.",
           focus: [
@@ -172,7 +167,6 @@ export const committees = {
           agenda: [
             "Preventing the misuse of high-risk pathogens as bioweapons, while still allowing research.",
           ],
-          kind: "MUN",
           description:
             "The World Health Organization convenes member states on global health. Delegates negotiate the financing, equity and emergency machinery that decide how the world responds when the next outbreak crosses a border.",
           focus: [
@@ -200,7 +194,6 @@ export const committees = {
           agenda: [
             "Transforming Indian agriculture digitally via AI and other factors, while keeping sustainability concerns in mind.",
           ],
-          kind: "SPECIALIZED",
           description:
             "NITI Aayog is the policy think tank of the Union government. Its Governing Council seats the Prime Minister, Union ministers and every Chief Minister, making it the room where national targets meet state realities.",
           focus: [
@@ -237,7 +230,6 @@ export const committees = {
           agenda: [
             "The Kurukshetra crisis: preventing, reshaping or waging the Great War — political alliances, succession, diplomacy and the fate of Hastinapura.",
           ],
-          kind: "SPECIALIZED",
           description:
             "Set in the Sabha of Hastinapura on the edge of the Kurukshetra war. Delegates embody the characters of the epic and argue dharma against ambition, kinship against justice, with the fate of a kingdom on the table.",
           focus: [
@@ -271,7 +263,6 @@ export const committees = {
           agenda: [
             "Maintaining accountability and responsibility for national entrance examinations such as NEET.",
           ],
-          kind: "SPECIALIZED",
           description:
             "The House of the People, where the government of the day must defend its bills on the floor. Delegates sit as Members of Parliament and use motions, questions and division of the House to make or break legislation.",
           focus: [
@@ -305,7 +296,6 @@ export const committees = {
           agenda: [
             "Reviewing AI-generated political content while still protecting freedom of speech.",
           ],
-          kind: "SPECIALIZED",
           description:
             "The Council of States reviews what the Lok Sabha passes and speaks for the states within the Union. Debate here is slower and more technical, and it is often where a bill is actually reshaped.",
           focus: [
@@ -336,7 +326,6 @@ export const committees = {
           agenda: [
             "Determining the role of BRICS in de-escalating conflicts in West Asia, and promoting international peace and security.",
           ],
-          kind: "SUMMIT",
           description:
             "A summit of major emerging economies coordinating on trade, finance and a multipolar order. Heads of delegation negotiate outside the established financial architecture, with currencies, development banks and energy on one table.",
           focus: [
@@ -360,7 +349,6 @@ export const committees = {
           agenda: [
             "Resolving the political deadlock between the Indian National Congress and the All-India Muslim League over India’s constitutional future during wartime.",
           ],
-          kind: "CRISIS",
           description:
             "A closed-door crisis cabinet convened as a national security emergency unfolds. Delegates hold political, military and intelligence portfolios, and every directive they pass has consequences the next update reports back.",
           focus: [
@@ -390,7 +378,6 @@ export const committees = {
           agenda: [
             "Ensuring accountability for human rights violations during the suppression of protests, and protecting fundamental freedoms.",
           ],
-          kind: "MUN",
           description:
             "The Human Rights Council investigates and reports on violations wherever they occur. Delegates negotiate resolutions that name states, mandate rapporteurs and test how far sovereignty shields a government from scrutiny.",
           focus: [
@@ -420,7 +407,6 @@ export const committees = {
             "The new world order crisis: escalation of a multi-theatre global conflict and the prevention of a Third World War.",
             "The 72-hour countdown: preventing a global catastrophe amid simultaneous cyber, military, economic and diplomatic crises.",
           ],
-          kind: "CRISIS",
           description:
             "A continuous crisis committee that never resets. Directives, updates and consequences carry forward across every session, so a decision taken in the first hour is still shaping the room on day two.",
           focus: [
@@ -441,7 +427,6 @@ export const committees = {
           abbr: "IP",
           name: "International Press · open to both school & college delegates",
           agenda: ["Agenda to be announced"],
-          kind: "PRESS",
           description:
             "The International Press covers every committee at the conference. Delegates work as reporters, photographers and caricaturists, filing copy on debates as they happen and holding the floor to account.",
           focus: [

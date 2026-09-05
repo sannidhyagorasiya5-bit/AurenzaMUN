@@ -10,14 +10,6 @@ import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 
-/* Agenda tags render as chips so the blue/ice ones can carry midnight-blue
-   text at 10:1; gold keeps its own tint, which already reads on the card. */
-const accentTag: Record<Accent, string> = {
-  blue: "bg-blue-chip text-blue-deep",
-  gold: "bg-brand/15 text-brand",
-  ice: "bg-ice-chip text-ice-deep",
-};
-
 const accentDot: Record<Accent, string> = {
   blue: "bg-blue",
   gold: "bg-brand",
@@ -112,23 +104,10 @@ export function Committees() {
                         className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
                       />
 
-                      <span
-                        className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
-                      >
-                        {c.kind}
-                      </span>
-                      <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
+                      <h3 className="font-display text-2xl font-bold uppercase leading-none tracking-tight">
                         {c.abbr}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
-                      <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-foreground/85">
-                        {c.agenda[0]}
-                      </p>
-                      {c.agenda.length > 1 ? (
-                        <span className="mt-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted">
-                          +{c.agenda.length - 1} more agenda
-                        </span>
-                      ) : null}
 
                       <span
                         className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[track.accent]}`}

@@ -34,7 +34,7 @@ export function Hero() {
         {/* left: copy */}
         <div>
           <motion.div className="flex flex-wrap gap-3" {...fade(0.1)}>
-            <Pill accent="gold" dot>
+            <Pill accent="gold" variant="plate" dot>
               {hero.badges[0]}
             </Pill>
             <a

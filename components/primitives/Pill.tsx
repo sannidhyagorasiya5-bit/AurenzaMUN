@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Accent } from "@/lib/content";
 
-type PillVariant = "solid" | "outline" | "dashed" | "ghost";
+type PillVariant = "solid" | "plate" | "outline" | "dashed" | "ghost";
 
 /* Blue/ice pills are light chips carrying midnight-blue text, which is the
    only way that navy stays legible on this near-black page. Gold keeps the
@@ -51,6 +51,8 @@ export function Pill({
     solid: `${accentSolid[accent]} border border-transparent`,
     outline: `border ${accentOutline[accent]}`,
     dashed: `border border-dashed ${accentBorder[accent]} text-muted`,
+    /* Filled gold plate, the same pairing the primary buttons use. */
+    plate: "border border-transparent bg-brand text-brand-fg",
     /* Ghost-white plate for accents that have no light chip of their own. */
     ghost: "border border-transparent bg-foreground text-background",
   };
@@ -58,7 +60,12 @@ export function Pill({
   return (
     <span className={`${base} ${variants[variant]} ${className}`}>
       {dot ? (
-        <span className={`h-1.5 w-1.5 rounded-full ${accentDot[accent]}`} aria-hidden />
+        <span
+          className={`h-1.5 w-1.5 rounded-full ${
+            variant === "plate" ? "bg-brand-fg" : accentDot[accent]
+          }`}
+          aria-hidden
+        />
       ) : null}
       {children}
     </span>
