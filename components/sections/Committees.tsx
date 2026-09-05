@@ -108,6 +108,14 @@ export function Committees() {
                         {c.abbr}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
+                      {/* Sits in the old agenda-preview slot; the agendas
+                          themselves live in the detail dialog. */}
+                      <p
+                        className="mt-4 text-sm leading-relaxed text-foreground/85"
+                        aria-hidden
+                      >
+                        Click for agendas
+                      </p>
 
                       <span
                         className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[track.accent]}`}
