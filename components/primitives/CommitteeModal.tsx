@@ -231,11 +231,26 @@ export function CommitteeModal({
                     <p
                       className={`font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLabel[accent]}`}
                     >
-                      Official Agenda
+                      {committee.agenda.length > 1 ? "Official Agendas" : "Official Agenda"}
                     </p>
-                    <p className="mt-2 font-display text-base font-semibold leading-snug tracking-tight sm:text-lg">
-                      &ldquo;{committee.agenda}&rdquo;
-                    </p>
+                    <ul className="mt-2 space-y-3">
+                      {committee.agenda.map((a, i) => (
+                        <li
+                          key={a}
+                          className="flex gap-3 font-display text-base font-semibold leading-snug tracking-tight sm:text-lg"
+                        >
+                          {committee.agenda.length > 1 ? (
+                            <span
+                              className={`mt-1 shrink-0 font-mono text-[0.7rem] ${accentLabel[accent]}`}
+                              aria-hidden
+                            >
+                              {String(i + 1).padStart(2, "0")}
+                            </span>
+                          ) : null}
+                          <span>&ldquo;{a}&rdquo;</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                   <p className="mt-7 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted">

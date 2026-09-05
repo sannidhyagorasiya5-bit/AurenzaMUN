@@ -115,12 +115,20 @@ export function Committees() {
                       <span
                         className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
                       >
-                        {c.agenda}
+                        {c.kind}
                       </span>
                       <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
                         {c.abbr}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
+                      <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-foreground/85">
+                        {c.agenda[0]}
+                      </p>
+                      {c.agenda.length > 1 ? (
+                        <span className="mt-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted">
+                          +{c.agenda.length - 1} more agenda
+                        </span>
+                      ) : null}
 
                       <span
                         className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[track.accent]}`}
