@@ -152,12 +152,9 @@ html {
   animation: glow var(--glow-duration, 7s) ease-in-out infinite;
 }
 
-/* Pause marquee on hover of its container. Touch has no hover, so a held
-   finger does the same job there. */
+/* Pause marquee on hover of its container */
 .marquee-pause:hover .animate-marquee,
-.marquee-pause:hover .animate-marquee-reverse,
-.marquee-pause:active .animate-marquee,
-.marquee-pause:active .animate-marquee-reverse {
+.marquee-pause:hover .animate-marquee-reverse {
   animation-play-state: paused;
 }
 
@@ -166,17 +163,10 @@ html {
    ============================================================ */
 /* No backdrop-filter: on a dark canvas an opaque translucent surface looks
    near-identical to a real blur but costs nothing to composite. Applying a
-   live blur to dozens of cards at once was saturating the main thread.
-
-   Must live in @layer components: unlayered rules outrank every layered one
-   no matter how specific, so an unlayered `border` shorthand here silently
-   beat the `hover:border-*` / `data-[active=true]:border-*` utilities the
-   cards use for their accent glow, and only the shadow half of it landed. */
-@layer components {
-  .glass {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-glass);
-  }
+   live blur to dozens of cards at once was saturating the main thread. */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
 }
 
 /* ============================================================

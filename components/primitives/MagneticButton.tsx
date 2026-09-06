@@ -9,19 +9,15 @@ import {
   useReducedMotion,
 } from "motion/react";
 import { smoothScrollTo } from "@/lib/scroll";
-import { useCoarsePointer, useProximity } from "@/lib/proximity";
 
 type Variant = "primary" | "secondary" | "ghost" | "disabled";
 
-/* `data-active` mirrors each `hover:` rule for touch, where the button lights
-   up as it passes the middle of the screen instead. Spelled out in full so
-   Tailwind can see every class statically. */
 const variantClass: Record<Variant, string> = {
   primary:
-    "bg-brand text-brand-fg font-semibold shadow-[0_10px_40px_-10px] shadow-brand/60 hover:shadow-brand/80 data-[active=true]:shadow-brand/80",
+    "bg-brand text-brand-fg font-semibold shadow-[0_10px_40px_-10px] shadow-brand/60 hover:shadow-brand/80",
   secondary:
-    "glass text-foreground border-border-glass hover:border-brand/60 hover:text-brand data-[active=true]:border-brand/60 data-[active=true]:text-brand",
-  ghost: "text-muted hover:text-foreground data-[active=true]:text-foreground",
+    "glass text-foreground border-border-glass hover:border-brand/60 hover:text-brand",
+  ghost: "text-muted hover:text-foreground",
   disabled:
     "border border-dashed border-border-glass text-muted cursor-not-allowed",
 };
@@ -31,11 +27,6 @@ const variantClass: Record<Variant, string> = {
  * springs back on leave, with a tap-scale bounce. Renders <a> when href is
  * given, otherwise <button>. The "disabled" variant is a real, focusable
  * element with aria-disabled and no magnetic effect (used for "Coming Soon").
- *
- * On touch there is no hover, so the accent it would pick up from a mouse is
- * taken as it nears the centre of the screen. The magnetic pull still works —
- * a finger dragged over the button is a pointer — but at reduced strength, so
- * the button never slides out from under the thumb that is pressing it.
  */
 export function MagneticButton({
   children,
@@ -55,7 +46,6 @@ export function MagneticButton({
   ariaLabel?: string;
 }) {
   const reduce = useReducedMotion();
-  const coarse = useCoarsePointer();
   const ref = useRef<HTMLElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -64,15 +54,12 @@ export function MagneticButton({
 
   const disabled = variant === "disabled";
   const magnetic = !reduce && !disabled;
-  const pull = coarse ? strength * 0.6 : strength;
-
-  const active = useProximity(ref, coarse && !disabled);
 
   function handleMove(e: React.PointerEvent) {
     if (!magnetic || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (rect.left + rect.width / 2)) * pull);
-    y.set((e.clientY - (rect.top + rect.height / 2)) * pull);
+    x.set((e.clientX - (rect.left + rect.width / 2)) * strength);
+    y.set((e.clientY - (rect.top + rect.height / 2)) * strength);
   }
 
   function reset() {
@@ -99,11 +86,8 @@ export function MagneticButton({
     ref: ref as never,
     className: `${base} ${variantClass[variant]} ${className}`,
     style: { x: sx, y: sy },
-    "data-active": active ? "true" : "false",
     onPointerMove: handleMove,
-    /* On touch a plain tap would lunge the button toward the finger and back;
-       only a drag should move it. */
-    onPointerDown: coarse ? undefined : handleMove,
+    onPointerDown: handleMove,
     onPointerUp: reset,
     onPointerCancel: reset,
     onPointerLeave: reset,
