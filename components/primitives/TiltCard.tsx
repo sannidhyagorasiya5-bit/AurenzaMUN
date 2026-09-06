@@ -1,22 +1,38 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
 import type { Accent } from "@/lib/content";
+import { useCoarsePointer } from "@/lib/pointer";
 
-const accentGlow: Record<Accent, string> = {
+const accentHover: Record<Accent, string> = {
   blue: "hover:border-blue/50 hover:shadow-blue/20",
   gold: "hover:border-brand/50 hover:shadow-brand/20",
   ice: "hover:border-ice/50 hover:shadow-ice/20",
 };
 
+/* The same accent treatment, applied from JS while a finger is down.
+   Tailwind scopes `hover:` under `@media (hover: hover)`, so on a phone the
+   whole accent layer never fired and every card read as flat. */
+const accentPress: Record<Accent, string> = {
+  blue: "border-blue/60 shadow-blue/25",
+  gold: "border-brand/60 shadow-brand/25",
+  ice: "border-ice/60 shadow-ice/25",
+};
+
 const MAX_TILT = 7; // degrees
 
 /**
- * Glass card with a subtle 3D hover tilt toward the pointer and an
- * accent-tinted glow on hover. Reduced-motion / interactive={false} keep
- * the card static (glow-only on hover).
+ * Glass card that reacts to whichever input the device actually has.
+ *
+ * With a pointer: a subtle 3D tilt toward the cursor plus an accent-tinted
+ * hover glow. Under a finger: no tilt — a touch is a discrete point, not a
+ * path to follow, and tracking it read as the card lunging at the tap and
+ * snapping back — so touch gets a press-in scale and the accent glow held
+ * for as long as the finger is down.
+ *
+ * Reduced motion / interactive={false} keep the card static, glow-only.
  */
 export function TiltCard({
   children,
@@ -30,13 +46,16 @@ export function TiltCard({
   className?: string;
 }) {
   const reduce = useReducedMotion();
+  const coarse = useCoarsePointer();
   const ref = useRef<HTMLDivElement>(null);
+  const [pressed, setPressed] = useState(false);
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const srx = useSpring(rx, { stiffness: 200, damping: 20 });
   const sry = useSpring(ry, { stiffness: 200, damping: 20 });
 
-  const tilt = interactive && !reduce;
+  const reactive = interactive && !reduce;
+  const tilt = reactive && !coarse;
 
   function handleMove(e: React.PointerEvent) {
     if (!tilt || !ref.current) return;
@@ -47,7 +66,17 @@ export function TiltCard({
     rx.set(-py * MAX_TILT * 2);
   }
 
-  function reset() {
+  function handleDown(e: React.PointerEvent) {
+    if (!reactive) return;
+    setPressed(true);
+    handleMove(e);
+  }
+
+  /* pointercancel matters most here: the browser fires it the moment it
+     claims the gesture for scrolling, so a finger dragging past a card
+     releases it instead of leaving it stuck lit. */
+  function release() {
+    setPressed(false);
     rx.set(0);
     ry.set(0);
   }
@@ -56,16 +85,19 @@ export function TiltCard({
     <motion.div
       ref={ref}
       onPointerMove={handleMove}
-      onPointerDown={handleMove}
-      onPointerUp={reset}
-      onPointerCancel={reset}
-      onPointerLeave={reset}
+      onPointerDown={handleDown}
+      onPointerUp={release}
+      onPointerCancel={release}
+      onPointerLeave={release}
+      whileTap={reactive ? { scale: 0.985 } : undefined}
       style={
         tilt
           ? { rotateX: srx, rotateY: sry, transformPerspective: 900 }
           : undefined
       }
-      className={`glass rounded-3xl shadow-lg shadow-black/30 transition-[border-color,box-shadow] duration-300 ${accentGlow[accent]} ${className}`}
+      className={`glass rounded-3xl shadow-lg shadow-black/30 transition-[border-color,box-shadow] duration-300 ${accentHover[accent]} ${
+        pressed ? accentPress[accent] : ""
+      } ${className}`}
     >
       {children}
     </motion.div>

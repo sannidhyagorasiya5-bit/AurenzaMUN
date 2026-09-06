@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { committees, type Accent, type Committee, type Track } from "@/lib/content";
 import { EASE } from "@/lib/motion";
@@ -9,6 +9,7 @@ import { GenerativeBackground } from "@/components/primitives/GenerativeBackgrou
 import { SectionIntro } from "@/components/primitives/SectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
+import { useCoarsePointer } from "@/lib/pointer";
 
 /* The agenda chip renders as a tinted plate so the blue/ice ones can carry
    midnight-blue text at 10:1; gold keeps its own tint, which already reads
@@ -31,11 +32,36 @@ const accentLink: Record<Accent, string> = {
   ice: "text-ice",
 };
 
+/* Past this much horizontal travel the gesture was a swipe, not a tap, and
+   the card underneath must not open its dialog on the click that follows. */
+const TAP_SLOP = 8; // px
+const SWIPE_DISTANCE = 60; // px
+const SWIPE_VELOCITY = 450; // px/s
+
 export function Committees() {
   const reduce = useReducedMotion();
+  const coarse = useCoarsePointer();
   type TrackId = (typeof committees.tracks)[number]["id"];
   const [active, setActive] = useState<TrackId>(committees.tracks[0].id);
   const [open, setOpen] = useState<Committee | null>(null);
+  /* Which way the panel should enter from, so switching tracks reads as
+     moving along a row rather than a crossfade in place. */
+  const [dir, setDir] = useState(0);
+  const dragX = useRef(0);
+
+  const index = committees.tracks.findIndex((t) => t.id === active);
+
+  function selectTrack(id: string) {
+    const next = committees.tracks.findIndex((t) => t.id === id);
+    if (next < 0 || next === index) return;
+    setDir(next > index ? 1 : -1);
+    setActive(committees.tracks[next].id);
+  }
+
+  function step(delta: number) {
+    const next = committees.tracks[index + delta];
+    if (next) selectTrack(next.id);
+  }
 
   const tabs: TabItem[] = committees.tracks.map((t) => ({
     id: t.id,
@@ -74,7 +100,7 @@ export function Committees() {
           <TrackTabs
             tabs={tabs}
             value={active}
-            onChange={(id) => setActive(id as TrackId)}
+            onChange={selectTrack}
             idBase="track"
           />
         </div>
@@ -85,10 +111,35 @@ export function Committees() {
             id={`track-panel-${track.id}`}
             role="tabpanel"
             aria-labelledby={`track-tab-${track.id}`}
-            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -16 }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, x: dir * 48 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, x: dir * -48 }}
             transition={{ duration: 0.4, ease: EASE }}
+            /* The tabs are the only way to reach the other tracks, and
+               reaching up to a pill is the worst thing you can ask of a
+               thumb. On touch the panel itself is draggable, so the tracks
+               page sideways under the finger. dragDirectionLock keeps a
+               vertical flick scrolling the page as normal. */
+            drag={coarse && !reduce ? "x" : false}
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            onPointerDownCapture={() => {
+              dragX.current = 0;
+            }}
+            onDrag={(_, info) => {
+              dragX.current = Math.max(dragX.current, Math.abs(info.offset.x));
+            }}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -SWIPE_DISTANCE || info.velocity.x < -SWIPE_VELOCITY) {
+                step(1);
+              } else if (
+                info.offset.x > SWIPE_DISTANCE ||
+                info.velocity.x > SWIPE_VELOCITY
+              ) {
+                step(-1);
+              }
+            }}
             className="mt-10"
           >
             {track.committees.length > 0 ? (
@@ -108,7 +159,10 @@ export function Committees() {
                           top so the card keeps its pointer tilt underneath. */}
                       <button
                         type="button"
-                        onClick={() => setOpen(c)}
+                        onClick={() => {
+                          if (dragX.current > TAP_SLOP) return;
+                          setOpen(c);
+                        }}
                         aria-label={`${c.abbr} — view agenda and portfolios`}
                         className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
                       />

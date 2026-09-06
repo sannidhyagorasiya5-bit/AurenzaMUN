@@ -157,7 +157,7 @@ export function CommitteeModal({
             type="button"
             onClick={onClose}
             aria-label="Close committee details"
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors duration-200 hover:bg-surface-strong hover:text-foreground focus-visible:outline-2"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-all duration-200 hover:bg-surface-strong hover:text-foreground active:scale-90 active:bg-surface-strong active:text-brand focus-visible:outline-2"
           >
             <svg
               viewBox="0 0 24 24"

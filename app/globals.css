@@ -152,9 +152,12 @@ html {
   animation: glow var(--glow-duration, 7s) ease-in-out infinite;
 }
 
-/* Pause marquee on hover of its container */
+/* Pause the marquee while a pointer rests on it. A phone has no hover, so
+   the ticker also parks under a held finger, driven by data-held. */
 .marquee-pause:hover .animate-marquee,
-.marquee-pause:hover .animate-marquee-reverse {
+.marquee-pause:hover .animate-marquee-reverse,
+.marquee-pause[data-held="true"] .animate-marquee,
+.marquee-pause[data-held="true"] .animate-marquee-reverse {
   animation-play-state: paused;
 }
 
@@ -164,9 +167,15 @@ html {
 /* No backdrop-filter: on a dark canvas an opaque translucent surface looks
    near-identical to a real blur but costs nothing to composite. Applying a
    live blur to dozens of cards at once was saturating the main thread. */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-glass);
+/* In @layer components on purpose: an unlayered rule outranks every layered
+   one no matter how specific, so an unlayered `border` shorthand here beat
+   the `hover:border-*` / `active:border-*` utilities and the accent border
+   never lit on any device. Layered, the utilities win. */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+  }
 }
 
 /* ============================================================

@@ -6,7 +6,10 @@ export function SiteFooter() {
   return (
     <footer className="relative border-t border-border-glass px-5 py-14 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">
-        <a href="#top" className="flex items-center gap-3 font-display text-2xl font-bold tracking-tight">
+        <a
+          href="#top"
+          className="flex items-center gap-3 font-display text-2xl font-bold tracking-tight transition-transform duration-200 active:scale-95"
+        >
           <Image
             src="/logo.jpg"
             alt="AurenzaMUN"
@@ -25,7 +28,7 @@ export function SiteFooter() {
             <NavLink
               key={item.href}
               href={item.href}
-              className="font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+              className="font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground active:text-brand"
             >
               {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
             </NavLink>
@@ -37,7 +40,7 @@ export function SiteFooter() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${site.copyright} — open in Google Maps`}
-          className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted transition-colors hover:text-foreground"
+          className="font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted transition-colors hover:text-foreground active:text-brand"
         >
           {site.copyright}
         </a>

@@ -31,8 +31,11 @@ export function Registration() {
           <ol className="grid gap-4 sm:grid-cols-2">
             {registration.steps.map((step, i) => (
               <Reveal as="li" key={step.index} delay={i * 0.08}>
-                <div className="glass group h-full rounded-2xl p-6 transition-colors duration-300 hover:border-brand/40">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-brand/40 font-display text-sm font-bold text-brand transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-fg">
+                {/* group-active carries the touch half of the fill: `hover:`
+                    is scoped to @media (hover: hover), so on a phone the
+                    badge never took its gold. */}
+                <div className="glass group h-full rounded-2xl p-6 transition-colors duration-300 hover:border-brand/40 active:border-brand/50">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-brand/40 font-display text-sm font-bold text-brand transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-fg group-active:bg-brand group-active:text-brand-fg">
                     {step.index}
                   </div>
                   <h3 className="mt-5 font-display text-lg font-semibold">{step.title}</h3>

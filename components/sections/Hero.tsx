@@ -26,7 +26,7 @@ export function Hero() {
     <section
       id="top"
       aria-label="AurenzaMUN introduction"
-      className="relative flex min-h-screen items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8"
+      className="relative flex min-h-[100dvh] items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8"
     >
       <GenerativeBackground variant="hero" />
 
@@ -42,7 +42,7 @@ export function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${hero.badges[1]} — open in Google Maps`}
-              className="transition-opacity hover:opacity-80"
+              className="inline-block transition-all duration-200 hover:opacity-80 active:scale-95 active:opacity-70"
             >
               <Pill accent="blue" dot className="cursor-pointer underline decoration-blue-deep/50 underline-offset-4 hover:decoration-blue-deep">
                 {hero.badges[1]}
@@ -97,7 +97,7 @@ export function Hero() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="SVIS Kandivali, Mumbai — open in Google Maps"
-            className="glass animate-glow absolute inset-6 block overflow-hidden rounded-[2rem]"
+            className="glass animate-glow absolute inset-6 block overflow-hidden rounded-[2rem] transition-[border-color,transform] duration-300 hover:border-brand/50 active:scale-[0.98] active:border-brand/60"
           >
             <Image
               src="/kandivali.webp"

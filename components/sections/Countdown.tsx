@@ -35,9 +35,14 @@ export function Countdown() {
   const [time, setTime] = useState<ReturnType<typeof getRemaining> | null>(null);
 
   useEffect(() => {
-    setTime(getRemaining());
+    /* First reading lands after the first paint, not during the effect
+       body, so correcting "now" never cascades a render out of hydration. */
+    const first = requestAnimationFrame(() => setTime(getRemaining()));
     const id = setInterval(() => setTime(getRemaining()), 1000);
-    return () => clearInterval(id);
+    return () => {
+      cancelAnimationFrame(first);
+      clearInterval(id);
+    };
   }, []);
 
   const done = time?.done ?? false;

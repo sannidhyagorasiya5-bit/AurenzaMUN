@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { Accent } from "@/lib/content";
 
 export type TabItem = {
@@ -39,6 +39,7 @@ export function TrackTabs({
   onChange: (id: string) => void;
   idBase?: string;
 }) {
+  const reduce = useReducedMotion();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
   function handleKey(e: React.KeyboardEvent, index: number) {
@@ -59,8 +60,9 @@ export function TrackTabs({
       {tabs.map((tab, i) => {
         const active = tab.id === value;
         return (
-          <button
+          <motion.button
             key={tab.id}
+            whileTap={reduce ? undefined : { scale: 0.92 }}
             ref={(el) => {
               refs.current[i] = el;
             }}
@@ -82,12 +84,14 @@ export function TrackTabs({
             )}
             <span
               className={`relative z-10 ${
-                active ? accentActiveText[tab.accent] : "text-muted hover:text-foreground"
+                active
+                  ? accentActiveText[tab.accent]
+                  : "text-muted hover:text-foreground active:text-foreground"
               }`}
             >
               {tab.label}
             </span>
-          </button>
+          </motion.button>
         );
       })}
     </div>
