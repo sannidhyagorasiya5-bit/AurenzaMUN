@@ -11,7 +11,7 @@ export function SiteFooter() {
           className="flex items-center gap-3 font-display text-2xl font-bold tracking-tight transition-transform duration-200 active:scale-95"
         >
           <Image
-            src="/logo.jpg"
+            src="/logo.jpeg"
             alt="AurenzaMUN"
             width={40}
             height={40}
