@@ -27,6 +27,13 @@ const accentPill: Record<Accent, string> = {
 /**
  * Accessible tablist with a sliding active indicator (shared layoutId).
  * Roving arrow-key navigation. `value`/`onChange` are controlled by parent.
+ *
+ * A phone gets a two-across grid rather than a wrapping row: "College
+ * Committees" is wider than half a 390px screen at the desktop type size,
+ * so flex-wrap put every tab on its own line and the control read as three
+ * stacked blocks. An odd tab out spans both columns and centres under them
+ * instead of hanging off to the left. Counted rather than hardcoded, since
+ * the committee dialog reuses this with two tabs.
  */
 export function TrackTabs({
   tabs,
@@ -42,6 +49,9 @@ export function TrackTabs({
   const reduce = useReducedMotion();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
+  /* An odd count leaves the last tab alone on its row of the mobile grid. */
+  const oddOneOut = tabs.length % 2 === 1;
+
   function handleKey(e: React.KeyboardEvent, index: number) {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
     e.preventDefault();
@@ -55,10 +65,11 @@ export function TrackTabs({
     <div
       role="tablist"
       aria-label="Committee tracks"
-      className="glass inline-flex flex-wrap gap-1.5 rounded-2xl p-1.5 sm:rounded-full"
+      className="glass grid w-full grid-cols-2 gap-1.5 rounded-2xl p-1.5 sm:inline-flex sm:w-auto sm:flex-wrap sm:rounded-full"
     >
       {tabs.map((tab, i) => {
         const active = tab.id === value;
+        const odd = oddOneOut && i === tabs.length - 1;
         return (
           <motion.button
             key={tab.id}
@@ -73,7 +84,14 @@ export function TrackTabs({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(tab.id)}
             onKeyDown={(e) => handleKey(e, i)}
-            className="relative rounded-full px-4 py-2.5 text-xs font-medium uppercase tracking-[0.12em] transition-colors duration-300 sm:px-6"
+            /* Padding lives entirely in the branch: listing px-3 and px-8
+               together would leave which one wins up to Tailwind's emit
+               order rather than to this component. */
+            className={`relative rounded-full py-2.5 text-[0.7rem] font-medium uppercase leading-tight tracking-[0.08em] transition-colors duration-300 sm:text-xs sm:tracking-[0.12em] ${
+              odd
+                ? "col-span-2 justify-self-center px-8 sm:col-span-1 sm:justify-self-auto sm:px-6"
+                : "px-3 sm:px-6"
+            }`}
           >
             {active && (
               <motion.span
