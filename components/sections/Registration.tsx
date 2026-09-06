@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { registration } from "@/lib/content";
+import { useCoarsePointer, useProximity } from "@/lib/proximity";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { Reveal } from "@/components/primitives/Reveal";
@@ -31,13 +33,7 @@ export function Registration() {
           <ol className="grid gap-4 sm:grid-cols-2">
             {registration.steps.map((step, i) => (
               <Reveal as="li" key={step.index} delay={i * 0.08}>
-                <div className="glass group h-full rounded-2xl p-6 transition-colors duration-300 hover:border-brand/40">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-brand/40 font-display text-sm font-bold text-brand transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-fg">
-                    {step.index}
-                  </div>
-                  <h3 className="mt-5 font-display text-lg font-semibold">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
-                </div>
+                <StepCard {...step} />
               </Reveal>
             ))}
           </ol>
@@ -71,5 +67,39 @@ export function Registration() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * One "how to join" step. Hovering fills its number badge gold and warms the
+ * card border; on a touchscreen neither ever fires, so the step lights up as
+ * it reaches the middle of the screen instead and the four of them fill in
+ * one by one as you scroll the list.
+ */
+function StepCard({
+  index,
+  title,
+  body,
+}: {
+  index: string;
+  title: string;
+  body: string;
+}) {
+  const coarse = useCoarsePointer();
+  const ref = useRef<HTMLDivElement>(null);
+  const active = useProximity(ref, coarse);
+
+  return (
+    <div
+      ref={ref}
+      data-active={active ? "true" : "false"}
+      className="glass group/step h-full rounded-2xl p-6 transition-colors duration-300 hover:border-brand/40 data-[active=true]:border-brand/40"
+    >
+      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-brand/40 font-display text-sm font-bold text-brand transition-colors duration-300 group-hover/step:bg-brand group-hover/step:text-brand-fg group-data-[active=true]/step:bg-brand group-data-[active=true]/step:text-brand-fg">
+        {index}
+      </div>
+      <h3 className="mt-5 font-display text-lg font-semibold">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+    </div>
   );
 }

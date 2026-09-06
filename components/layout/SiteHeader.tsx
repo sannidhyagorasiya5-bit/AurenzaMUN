@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { nav } from "@/lib/content";
+import { EASE } from "@/lib/motion";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { NavLink } from "@/components/primitives/NavLink";
 
@@ -116,22 +117,40 @@ export function SiteHeader() {
             className="absolute inset-x-0 top-full border-b border-border-glass bg-background px-5 py-6 md:hidden"
           >
             <ul className="flex flex-col gap-5">
-              {nav.map((item) => (
-                <li key={item.href}>
+              {nav.map((item, i) => (
+                /* Desktop sweeps a gold rule under each link on hover.
+                   Touch has no hover, so the rule fills on press instead, and
+                   the links stagger in so the panel arrives rather than
+                   simply appearing. */
+                <motion.li
+                  key={item.href}
+                  initial={reduce ? {} : { opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, ease: EASE, delay: 0.05 + i * 0.05 }}
+                >
                   <NavLink
                     href={item.href}
                     onNavigate={() => setOpen(false)}
-                    className="font-mono text-sm uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+                    className="group relative inline-block font-mono text-sm uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground active:text-foreground"
                   >
                     {item.label}
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-1 left-0 h-px w-0 bg-brand transition-all duration-300 group-hover:w-full group-active:w-full"
+                    />
                   </NavLink>
-                </li>
+                </motion.li>
               ))}
-              <li className="pt-2">
+              <motion.li
+                className="pt-2"
+                initial={reduce ? {} : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: EASE, delay: 0.05 + nav.length * 0.05 }}
+              >
                 <MagneticButton href="#register" variant="primary" className="w-full">
                   Register Now
                 </MagneticButton>
-              </li>
+              </motion.li>
             </ul>
           </motion.nav>
         )}

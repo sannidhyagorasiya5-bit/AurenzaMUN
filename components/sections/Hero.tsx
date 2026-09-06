@@ -125,10 +125,11 @@ export function Hero() {
         </div>
       </div>
 
-      {/* scroll cue */}
+      {/* scroll cue — shown on every breakpoint: the hero runs past the fold
+          on a phone too, so the cue marks the end of it there as well */}
       <motion.div
         aria-hidden
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:block"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2"
         initial={reduce ? {} : { opacity: 0 }}
         animate={reduce ? {} : { opacity: 1 }}
         transition={{ delay: 1.3 }}
