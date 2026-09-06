@@ -60,6 +60,11 @@
    keep anchor navigation snappy. */
 html {
   scroll-behavior: auto;
+  /* The dialog and the mobile menu both lock the body by hiding overflow.
+     Without a reserved gutter the desktop scrollbar vanishes at that moment
+     and the whole page, fixed header included, jumps sideways just as the
+     open animation starts. */
+  scrollbar-gutter: stable;
 }
 
 body {

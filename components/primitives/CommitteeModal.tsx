@@ -129,8 +129,14 @@ export function CommitteeModal({
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 py-6 sm:py-10">
+      {/* Opaque scrim rather than a backdrop-filter. This was the only live
+          blur left on the site and it covered the whole viewport, so every
+          frame of the fade-in made the compositor re-blur the entire page
+          underneath, and scrolling the dialog body kept paying for it. The
+          same reasoning already retired backdrop-filter from `.glass`; on a
+          near-black canvas a denser scrim is near-indistinguishable. */}
       <motion.div
-        className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/92"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

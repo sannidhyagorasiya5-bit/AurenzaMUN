@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { committees, type Accent, type Committee, type Track } from "@/lib/content";
 import { EASE } from "@/lib/motion";
@@ -38,6 +38,76 @@ const TAP_SLOP = 8; // px
 const SWIPE_DISTANCE = 60; // px
 const SWIPE_VELOCITY = 450; // px/s
 
+/**
+ * One committee card.
+ *
+ * Memoised on purpose. Opening or closing the dialog is a state change on
+ * the section, which otherwise re-rendered all six motion-wrapped cards in
+ * the very frame the dialog was mounting in. Every prop here is
+ * referentially stable across that change, so the grid now sits it out.
+ */
+const CommitteeCard = memo(function CommitteeCard({
+  committee,
+  accent,
+  index,
+  reduce,
+  onOpen,
+}: {
+  committee: Committee;
+  accent: Accent;
+  index: number;
+  reduce: boolean;
+  onOpen: (c: Committee) => void;
+}) {
+  return (
+    <motion.div
+      initial={reduce ? {} : { opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: EASE, delay: index * 0.07 }}
+    >
+      <TiltCard accent={accent} className="relative flex h-full flex-col p-7">
+        {/* The whole panel opens the dialog; the button sits on top so the
+            card keeps its pointer tilt underneath. */}
+        <button
+          type="button"
+          onClick={() => onOpen(committee)}
+          aria-label={`${committee.abbr} — view agenda and portfolios`}
+          className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
+        />
+
+        <span
+          className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[accent]}`}
+          aria-hidden
+        >
+          Click for agendas
+        </span>
+        <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
+          {committee.abbr}
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-muted">{committee.name}</p>
+
+        <span
+          className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[accent]}`}
+          aria-hidden
+        >
+          View details
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-3 w-3"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
+      </TiltCard>
+    </motion.div>
+  );
+});
+
 export function Committees() {
   const reduce = useReducedMotion();
   const coarse = useCoarsePointer();
@@ -50,6 +120,13 @@ export function Committees() {
   const dragX = useRef(0);
 
   const index = committees.tracks.findIndex((t) => t.id === active);
+
+  /* Stable, so the memoised cards never see a new prop. dragX is a ref, so
+     reading the swipe guard here costs nothing and needs no dependency. */
+  const openCommittee = useCallback((c: Committee) => {
+    if (dragX.current > TAP_SLOP) return;
+    setOpen(c);
+  }, []);
 
   function selectTrack(id: string) {
     const next = committees.tracks.findIndex((t) => t.id === id);
@@ -145,58 +222,14 @@ export function Committees() {
             {track.committees.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {track.committees.map((c, i) => (
-                  <motion.div
+                  <CommitteeCard
                     key={c.abbr}
-                    initial={reduce ? {} : { opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: EASE, delay: i * 0.07 }}
-                  >
-                    <TiltCard
-                      accent={track.accent}
-                      className="relative flex h-full flex-col p-7"
-                    >
-                      {/* The whole panel opens the dialog; the button sits on
-                          top so the card keeps its pointer tilt underneath. */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (dragX.current > TAP_SLOP) return;
-                          setOpen(c);
-                        }}
-                        aria-label={`${c.abbr} — view agenda and portfolios`}
-                        className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
-                      />
-
-                      <span
-                        className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[track.accent]}`}
-                        aria-hidden
-                      >
-                        Click for agendas
-                      </span>
-                      <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
-                        {c.abbr}
-                      </h3>
-                      <p className="mt-3 text-sm leading-relaxed text-muted">{c.name}</p>
-
-                      <span
-                        className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[track.accent]}`}
-                        aria-hidden
-                      >
-                        View details
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-3 w-3"
-                        >
-                          <path d="M5 12h14M13 6l6 6-6 6" />
-                        </svg>
-                      </span>
-                    </TiltCard>
-                  </motion.div>
+                    committee={c}
+                    accent={track.accent}
+                    index={i}
+                    reduce={!!reduce}
+                    onOpen={openCommittee}
+                  />
                 ))}
               </div>
             ) : (
