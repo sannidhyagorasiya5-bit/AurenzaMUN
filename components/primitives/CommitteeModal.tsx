@@ -233,33 +233,23 @@ export function CommitteeModal({
                     {committee.description}
                   </p>
 
-                  {/* Dashed while the agenda is pending, the same way the
-                      resources section marks what is not out yet. */}
-                  <div
-                    className={`mt-6 rounded-2xl border bg-surface p-5 ${
-                      committee.agenda
-                        ? "border-border-glass"
-                        : "border-dashed border-border-glass"
-                    }`}
-                  >
-                    <p
-                      className={`font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLabel[accent]}`}
-                    >
-                      Official Agenda
-                    </p>
-                    {committee.agenda ? (
+                  {/* Nothing at all until there is an agenda to print. An
+                      "Official Agenda" heading over a placeholder draws the
+                      eye to the one thing the committee cannot tell you
+                      yet; the description and focus areas carry the tab on
+                      their own. */}
+                  {committee.agenda ? (
+                    <div className="mt-6 rounded-2xl border border-border-glass bg-surface p-5">
+                      <p
+                        className={`font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLabel[accent]}`}
+                      >
+                        Official Agenda
+                      </p>
                       <p className="mt-2 font-display text-base font-semibold leading-snug tracking-tight sm:text-lg">
                         &ldquo;{committee.agenda}&rdquo;
                       </p>
-                    ) : (
-                      /* Unquoted on purpose: wrapping this in the same
-                         quotation marks an agenda gets would read as though
-                         the agenda were the phrase "to be announced". */
-                      <p className="mt-2 font-display text-base font-medium leading-snug tracking-tight text-muted sm:text-lg">
-                        To be announced.
-                      </p>
-                    )}
-                  </div>
+                    </div>
+                  ) : null}
 
                   <p className="mt-7 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted">
                     Key Focus Areas
