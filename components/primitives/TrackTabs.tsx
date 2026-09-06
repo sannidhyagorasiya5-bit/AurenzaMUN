@@ -25,6 +25,18 @@ const accentPill: Record<Accent, string> = {
 };
 
 /**
+ * Splits a label before its last word: "School Committees" -> "School" +
+ * "Committees". Single-word labels come back with an empty head and are
+ * rendered unchanged.
+ */
+function splitLabel(label: string) {
+  const i = label.lastIndexOf(" ");
+  return i < 0
+    ? { head: "", tail: label }
+    : { head: label.slice(0, i), tail: label.slice(i + 1) };
+}
+
+/**
  * Accessible tablist with a sliding active indicator (shared layoutId).
  * Roving arrow-key navigation. `value`/`onChange` are controlled by parent.
  *
@@ -34,6 +46,13 @@ const accentPill: Record<Accent, string> = {
  * stacked blocks. An odd tab out spans both columns and centres under them
  * instead of hanging off to the left. Counted rather than hardcoded, since
  * the committee dialog reuses this with two tabs.
+ *
+ * Every label also breaks before its last word on a phone. Left to wrap on
+ * its own, "College Committees" took two lines while "School Committees"
+ * kept one, and the pair sat at different line counts inside equal-height
+ * cells. Breaking both at the same place is deterministic at any width, and
+ * because no label has to survive on one line any more the type keeps its
+ * full desktop size instead of shrinking to fit.
  */
 export function TrackTabs({
   tabs,
@@ -70,6 +89,7 @@ export function TrackTabs({
       {tabs.map((tab, i) => {
         const active = tab.id === value;
         const odd = oddOneOut && i === tabs.length - 1;
+        const { head, tail } = splitLabel(tab.label);
         return (
           <motion.button
             key={tab.id}
@@ -87,10 +107,10 @@ export function TrackTabs({
             /* Padding lives entirely in the branch: listing px-3 and px-8
                together would leave which one wins up to Tailwind's emit
                order rather than to this component. */
-            className={`relative rounded-full py-2.5 text-[0.7rem] font-medium uppercase leading-tight tracking-[0.08em] transition-colors duration-300 sm:text-xs sm:tracking-[0.12em] ${
+            className={`relative rounded-full py-2.5 text-center text-xs font-medium uppercase leading-tight tracking-[0.12em] transition-colors duration-300 ${
               odd
                 ? "col-span-2 justify-self-center px-8 sm:col-span-1 sm:justify-self-auto sm:px-6"
-                : "px-3 sm:px-6"
+                : "px-4 sm:px-6"
             }`}
           >
             {active && (
@@ -107,7 +127,8 @@ export function TrackTabs({
                   : "text-muted hover:text-foreground active:text-foreground"
               }`}
             >
-              {tab.label}
+              {head ? `${head} ` : null}
+              <span className="block sm:inline">{tail}</span>
             </span>
           </motion.button>
         );
