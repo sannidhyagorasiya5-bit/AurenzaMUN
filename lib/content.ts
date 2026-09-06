@@ -50,7 +50,9 @@ export const hero = {
 export type Committee = {
   abbr: string;
   name: string;
-  agenda: string;
+  /** Omit until the secretariat confirms it; the card then drops its
+      "Click for agendas" chip and the dialog says so in as many words. */
+  agenda?: string;
   description: string;
   /** Rendered as the two-column "KEY FOCUS AREAS" list. */
   focus: string[];
@@ -71,7 +73,8 @@ export type Track = {
 /**
  * DRAFT COPY — the descriptions, focus areas and portfolio slates below were
  * written as a starting point and are NOT confirmed by the secretariat.
- * The agendas themselves are confirmed. Trim each slate to the seats actually being allotted,
+ * The agendas themselves are confirmed, except where `agenda` is omitted.
+ * Trim each slate to the seats actually being allotted,
  * and delete `portfolios` on any committee whose matrix is not public yet
  * (the second tab hides itself when the list is missing).
  */
@@ -412,7 +415,6 @@ export const committees = {
         {
           abbr: "IP",
           name: "International Press · open to both school & college delegates",
-          agenda: "Agenda to be announced",
           description:
             "The International Press covers every committee at the conference. Delegates work as reporters, photographers and caricaturists, filing copy on debates as they happen and holding the floor to account.",
           focus: [

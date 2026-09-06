@@ -71,17 +71,31 @@ const CommitteeCard = memo(function CommitteeCard({
         <button
           type="button"
           onClick={() => onOpen(committee)}
-          aria-label={`${committee.abbr} — view agenda and portfolios`}
+          aria-label={
+            committee.agenda
+              ? `${committee.abbr} — view agenda and portfolios`
+              : `${committee.abbr} — view details and portfolios`
+          }
           className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-2"
         />
 
-        <span
-          className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[accent]}`}
-          aria-hidden
+        {/* No chip on a committee whose agenda is not out yet: promising an
+            agenda behind the tap and not having one is worse than staying
+            quiet. The "View details" line below still carries the
+            affordance. */}
+        {committee.agenda ? (
+          <span
+            className={`inline-block self-start rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase tracking-[0.2em] ${accentTag[accent]}`}
+            aria-hidden
+          >
+            Click for agendas
+          </span>
+        ) : null}
+        <h3
+          className={`font-display text-2xl font-bold uppercase leading-none tracking-tight ${
+            committee.agenda ? "mt-4" : ""
+          }`}
         >
-          Click for agendas
-        </span>
-        <h3 className="mt-4 font-display text-2xl font-bold uppercase leading-none tracking-tight">
           {committee.abbr}
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-muted">{committee.name}</p>
