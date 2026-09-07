@@ -54,7 +54,12 @@ export function Registration() {
               <p className="mt-4 text-sm leading-relaxed text-muted">{registration.card.body}</p>
 
               <div className="mt-6">
-                <MagneticButton variant="disabled" className="w-full">
+                <MagneticButton
+                  href={registration.card.href}
+                  variant="primary"
+                  className="w-full"
+                  ariaLabel={`${registration.card.button} — opens in a new tab`}
+                >
                   {registration.card.button}
                 </MagneticButton>
               </div>

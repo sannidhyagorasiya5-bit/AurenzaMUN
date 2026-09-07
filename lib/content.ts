@@ -464,8 +464,10 @@ export const registration = {
     },
   ],
   card: {
-    body: "The delegate registration form will be shared soon. Check back here for the direct link, or reach out to the secretariat for early access.",
-    button: "Google Form Link — Coming Soon",
+    body: "The delegate registration form is live. Fill in your details and committee preferences, and the secretariat will follow up with your allotment.",
+    button: "Open the Google Form",
+    /** Live Google Form. The card's button opens it in a new tab. */
+    href: "https://forms.gle/33XbJd9G31vzCe4J7",
   },
   details: [
     { label: "Deadline", value: "Late September 2026" },

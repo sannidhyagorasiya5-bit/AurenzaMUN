@@ -164,8 +164,17 @@ export function MagneticButton({
   }
 
   if (href) {
+    /* Anything not an in-page anchor is off-site, and opens in its own tab:
+       a form is a detour, and losing the page behind it costs the delegate
+       their place in it. */
+    const offsite = !href.startsWith("#");
     return (
-      <motion.a href={href} onClick={handleAnchorClick} {...common}>
+      <motion.a
+        href={href}
+        onClick={handleAnchorClick}
+        {...(offsite ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        {...common}
+      >
         {label}
       </motion.a>
     );
