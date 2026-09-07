@@ -94,7 +94,8 @@ export const committees = {
         {
           abbr: "MARVEL",
           name: "Marvel Crisis Committee",
-          agenda: "The rise of Doctor Doom and the threats to global security.",
+          agenda:
+            "The rise of Doctor Doom and the emerging threat to global security: addressing the consolidation of power, sovereignty, weaponisation of advanced technology, and the international response to a new global threat.",
           description:
             "A fast-moving crisis committee set in the Marvel universe. Delegates take on the powers, allegiances and grudges of iconic heroes and villains while an escalating threat forces the room to negotiate under pressure.",
           focus: [
@@ -117,7 +118,7 @@ export const committees = {
           abbr: "AIPPM",
           name: "All India Political Parties Meet",
           agenda:
-            "Should criminals holding severe crimes still be allowed to contest for elections? Electoral and political reforms in India: strengthening political funding transparency, electoral accountability and the integrity of the democratic process.",
+            "Criminalisation of politics in India: should individuals accused of serious crimes be permitted to contest elections? Electoral reforms in India: ensuring transparency, accountability and fair representation.",
           description:
             "The All India Political Parties Meet puts leaders from across the political spectrum in one room. Delegates argue as sitting politicians, defending a party line in public while searching for a consensus the country can actually live with.",
           focus: [
@@ -144,7 +145,7 @@ export const committees = {
           abbr: "UNSC",
           name: "United Nations Security Council",
           agenda:
-            "The accountability stances of countries acting in active conflict zones when ISIL/Da’esh and other terrorist organizations pose serious threats.",
+            "The crisis in Haiti: restoring security, political stability and state authority amidst gang violence, humanitarian crisis and foreign intervention.",
           description:
             "The Security Council carries primary responsibility for international peace and security. Fifteen members debate under the shadow of the veto, where a single vote decides whether the Council acts at all.",
           focus: [
@@ -164,7 +165,7 @@ export const committees = {
           abbr: "WHO",
           name: "World Health Organization",
           agenda:
-            "Preventing the misuse of high-risk pathogens as bioweapons, while still allowing research.",
+            "Global biosecurity: balancing high-risk pathogen research with the prevention of biological threats.",
           description:
             "The World Health Organization convenes member states on global health. Delegates negotiate the financing, equity and emergency machinery that decide how the world responds when the next outbreak crosses a border.",
           focus: [
@@ -190,7 +191,7 @@ export const committees = {
           abbr: "NEETI AAYOG",
           name: "National Institution for Transforming India",
           agenda:
-            "Transforming Indian agriculture digitally via AI and other factors, while keeping sustainability concerns in mind.",
+            "Transforming Indian agriculture: addressing farmer welfare, technology, climate resilience, rural development, food security and economic growth.",
           description:
             "NITI Aayog is the policy think tank of the Union government. Its Governing Council seats the Prime Minister, Union ministers and every Chief Minister, making it the room where national targets meet state realities.",
           focus: [
@@ -225,7 +226,7 @@ export const committees = {
           abbr: "MAHABHARATA",
           name: "A committee set on Mahabharata.",
           agenda:
-            "The Kurukshetra crisis: preventing, reshaping or waging the Great War — political alliances, succession, diplomacy and the fate of Hastinapura.",
+            "The Kurukshetra war: preventing, reshaping or waging the Great War — political alliances, succession, diplomacy and the fate of Hastinapura.",
           description:
             "Set in the Sabha of Hastinapura on the edge of the Kurukshetra war. Delegates embody the characters of the epic and argue dharma against ambition, kinship against justice, with the fate of a kingdom on the table.",
           focus: [
@@ -257,7 +258,7 @@ export const committees = {
           abbr: "LOK SABHA",
           name: "House of the People",
           agenda:
-            "Maintaining accountability and responsibility for national entrance examinations such as NEET.",
+            "The youth question in India: education, jobs, representation, rights and the future of India’s young population.",
           description:
             "The House of the People, where the government of the day must defend its bills on the floor. Delegates sit as Members of Parliament and use motions, questions and division of the House to make or break legislation.",
           focus: [
@@ -289,7 +290,7 @@ export const committees = {
           abbr: "RAJYA SABHA",
           name: "Council of States",
           agenda:
-            "Reviewing AI-generated political content while still protecting freedom of speech.",
+            "Indian cinema and the youth: celebrity influence, brand endorsements, creative freedom and social responsibility.",
           description:
             "The Council of States reviews what the Lok Sabha passes and speaks for the states within the Union. Debate here is slower and more technical, and it is often where a bill is actually reshaped.",
           focus: [
@@ -318,7 +319,7 @@ export const committees = {
           abbr: "BRICS SUMMIT",
           name: "BRICS Summit",
           agenda:
-            "Determining the role of BRICS in de-escalating conflicts in West Asia, and promoting international peace and security.",
+            "BRICS and the dollar: rethinking dollar dominance, global financial power and the future of international trade and finance.",
           description:
             "A summit of major emerging economies coordinating on trade, finance and a multipolar order. Heads of delegation negotiate outside the established financial architecture, with currencies, development banks and energy on one table.",
           focus: [
