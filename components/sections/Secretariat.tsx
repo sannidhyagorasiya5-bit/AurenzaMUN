@@ -271,12 +271,6 @@ export function Secretariat() {
             </div>
           </div>
         </Reveal>
-
-        <Reveal delay={0.1}>
-          <p className="mt-10 text-center font-mono text-xs uppercase tracking-[0.18em] text-muted">
-            {secretariat.footnote}
-          </p>
-        </Reveal>
       </div>
     </section>
   );

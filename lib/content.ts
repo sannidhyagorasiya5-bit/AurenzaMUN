@@ -496,7 +496,6 @@ export const secretariat = {
     { name: "Neev Mehta", role: "HEAD OF PHOTOGRAPHY" },
     { name: "Bhoomi Bharadiya", role: "HEAD OF CREATIVE & FINE ARTS" },
   ] as TeamMember[],
-  footnote: "More team members will be announced soon",
 } as const;
 
 export const resources = {
