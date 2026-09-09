@@ -488,6 +488,13 @@ export const secretariat = {
     },
   ],
   footnote: "More team members will be announced soon",
+  /* The showcase reserves its full grid up front — seven rows, three panels
+     across — so names can be announced one at a time without the section
+     reflowing under the reader each time. Every slot past `members` renders
+     as a dashed placeholder, so filling one in is just a matter of appending
+     to the array above. */
+  panelRows: 7,
+  panelsPerRow: 3,
 } as const;
 
 export const resources = {
