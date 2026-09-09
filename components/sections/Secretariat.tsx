@@ -151,12 +151,6 @@ export function Secretariat() {
                         / {pad(roster.length - 1)}
                       </span>
                     </p>
-
-                    {member.bio ? (
-                      <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">
-                        {member.bio}
-                      </p>
-                    ) : null}
                   </motion.div>
                 </AnimatePresence>
 

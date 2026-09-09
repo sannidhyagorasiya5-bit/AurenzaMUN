@@ -472,8 +472,6 @@ export type TeamMember = {
   name: string;
   /** Uppercase department line, shown under the name in the showcase. */
   role: string;
-  /** Only the two generals carry a bio; heads show the role alone. */
-  bio?: string;
 };
 
 export const secretariat = {
@@ -486,16 +484,8 @@ export const secretariat = {
   /* Generals lead the roster, so the showcase opens on the Secretary General
      and the department heads follow in the rail behind them. */
   roster: [
-    {
-      name: "Ruqaiyah Bharmal",
-      role: "SECRETARY GENERAL",
-      bio: "Leading AurenzaMUN as Secretary General, Ruqaiyah brings vision, discipline, and diplomatic acumen to ensure a world-class conference experience for every delegate.",
-    },
-    {
-      name: "Arnav Bohra",
-      role: "DIRECTOR GENERAL",
-      bio: "As Director General, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
-    },
+    { name: "Ruqaiyah Bharmal", role: "SECRETARY GENERAL" },
+    { name: "Arnav Bohra", role: "DIRECTOR GENERAL" },
     { name: "Sannidhya Gorasiya", role: "HEAD OF TECHNICALS & DEVELOPMENT" },
     { name: "Agastya Maurya", role: "HEAD OF MARKETING" },
     { name: "Daveena Hada", role: "DIGITAL MEDIA" },
