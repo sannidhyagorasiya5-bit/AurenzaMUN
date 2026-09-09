@@ -487,14 +487,14 @@ export const secretariat = {
     { name: "Ruqaiyah Bharmal", role: "SECRETARY GENERAL" },
     { name: "Arnav Bohra", role: "DIRECTOR GENERAL" },
     { name: "Sannidhya Gorasiya", role: "HEAD OF TECHNICALS & DEVELOPMENT" },
+    { name: "Bhoomi Bharadiya", role: "HEAD OF CREATIVE & FINE ARTS" },
+    { name: "Diya Joshi", role: "HEAD OF BRANDING & SUPPLIES" },
     { name: "Agastya Maurya", role: "HEAD OF MARKETING" },
     { name: "Daveena Hada", role: "HEAD OF DIGITAL MEDIA" },
     { name: "Ariana Chauhan", role: "HEAD OF HOSPITALITY" },
     { name: "Aarav Jain", role: "HEAD OF SECURITY" },
-    { name: "Diya Joshi", role: "HEAD OF BRANDING & SUPPLIES" },
     { name: "Zeal Joshi", role: "HEAD OF GRAPHICS" },
     { name: "Neev Mehta", role: "HEAD OF PHOTOGRAPHY" },
-    { name: "Bhoomi Bharadiya", role: "HEAD OF CREATIVE & FINE ARTS" },
   ] as TeamMember[],
 } as const;
 
