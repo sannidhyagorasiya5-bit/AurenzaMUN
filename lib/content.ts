@@ -468,25 +468,43 @@ export const registration = {
   ],
 } as const;
 
+export type TeamMember = {
+  name: string;
+  /** Uppercase department line, shown under the name in the showcase. */
+  role: string;
+  /** Only the two generals carry a bio; heads show the role alone. */
+  bio?: string;
+};
+
 export const secretariat = {
   eyebrow: "LEADERSHIP",
   heading: ["MEET THE", "TEAM"] as [string, string],
   description:
     "AurenzaMUN is guided by a dedicated team committed to delivering an exceptional conference experience.",
-  members: [
+  /** Watermark set behind the showcase, mirroring the wordmark in the hero. */
+  watermark: "AURENZA",
+  /* Generals lead the roster, so the showcase opens on the Secretary General
+     and the department heads follow in the rail behind them. */
+  roster: [
     {
       name: "Ruqaiyah Bharmal",
       role: "SECRETARY GENERAL",
-      subtitle: "SECRETARY GENERAL · AURENZAMUN",
       bio: "Leading AurenzaMUN as Secretary General, Ruqaiyah brings vision, discipline, and diplomatic acumen to ensure a world-class conference experience for every delegate.",
     },
     {
       name: "Arnav Bohra",
       role: "DIRECTOR GENERAL",
-      subtitle: "DIRECTOR GENERAL · AURENZAMUN",
       bio: "As Director General, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
     },
-  ],
+    { name: "Sannidhya Gorasiya", role: "HEAD OF TECHNICALS & DEVELOPMENT" },
+    { name: "Agastya Maurya", role: "HEAD OF MARKETING" },
+    { name: "Daveena Hada", role: "DIGITAL MEDIA" },
+    { name: "Ariana Chauhan", role: "HEAD OF HOSPITALITY" },
+    { name: "Aarav Jain", role: "HEAD OF SECURITY" },
+    { name: "Diya Joshi", role: "BRANDING & SUPPLIES" },
+    { name: "Zeal Joshi", role: "HEAD OF GRAPHICS" },
+    { name: "Neev Mehta", role: "HEAD OF PHOTOGRAPHY" },
+  ] as TeamMember[],
   footnote: "More team members will be announced soon",
 } as const;
 
