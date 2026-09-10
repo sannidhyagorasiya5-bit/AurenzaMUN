@@ -468,32 +468,62 @@ export const registration = {
   ],
 } as const;
 
+export type TeamMember = {
+  name: string;
+  /** Uppercase department line, shown on the panel's pill. */
+  role: string;
+};
+
+export type TeamGroup = {
+  /** Sub-heading above the group's grid — "GENERALS", "HEADS"... */
+  label: string;
+  members: TeamMember[];
+  /**
+   * Reserve a fixed grid instead of sizing it to `members`. Every slot past
+   * the last name renders as a dashed placeholder, which lets a tier that is
+   * still being announced hold its space so the section does not reflow under
+   * the reader each time a name lands. Omit for a tier that is fully known.
+   */
+  panelRows?: number;
+};
+
 export const secretariat = {
   eyebrow: "LEADERSHIP",
   heading: ["MEET THE", "TEAM"] as [string, string],
   description:
     "AurenzaMUN is guided by a dedicated team committed to delivering an exceptional conference experience.",
-  members: [
+  /* The roster renders as one labelled grid per tier, top down. Adding a name
+     is a matter of appending it to the right group's `members`. */
+  groups: [
     {
-      name: "Ruqaiyah Bharmal",
-      role: "SECRETARY GENERAL",
-      subtitle: "SECRETARY GENERAL · AURENZAMUN",
-      bio: "Leading AurenzaMUN as Secretary General, Ruqaiyah brings vision, discipline, and diplomatic acumen to ensure a world-class conference experience for every delegate.",
+      label: "GENERALS",
+      members: [
+        { name: "Ruqaiyah Bharmal", role: "SECRETARY GENERAL" },
+        { name: "Arnav Bohra", role: "DIRECTOR GENERAL" },
+      ],
     },
     {
-      name: "Arnav Bohra",
-      role: "DIRECTOR GENERAL",
-      subtitle: "DIRECTOR GENERAL · AURENZAMUN",
-      bio: "As Director General, Arnav ensures procedural excellence and equitable debate across all committees, supporting delegates in navigating rules of procedure.",
+      label: "HEADS",
+      /* Department heads, in announcement order. */
+      members: [
+        { name: "Sannidhya Gorasiya", role: "HEAD OF TECHNICALS & DEVELOPMENT" },
+        { name: "Agastya Maurya", role: "HEAD OF MARKETING & SPONSORS" },
+        { name: "Bhoomi Bharadiya", role: "HEAD OF CREATIVE & FINE ARTS" },
+        { name: "Diya Joshi", role: "HEAD OF BRANDING & SUPPLIES" },
+        { name: "Ariana Chauhan", role: "HEAD OF HOSPITALITY" },
+        { name: "Aarav Jain", role: "HEAD OF SECURITY" },
+        { name: "Neev Mehta", role: "HEAD OF PHOTOGRAPHY" },
+        { name: "Daveena Hada", role: "HEAD OF DIGITAL MEDIA" },
+        { name: "Zeal Joshi", role: "HEAD OF GRAPHICAL DEVELOPMENT" },
+      ],
     },
-  ],
-  footnote: "More team members will be announced soon",
-  /* The showcase reserves its full grid up front — seven rows, three panels
-     across — so names can be announced one at a time without the section
-     reflowing under the reader each time. Every slot past `members` renders
-     as a dashed placeholder, so filling one in is just a matter of appending
-     to the array above. */
-  panelRows: 7,
+    {
+      label: "SUB-HEADS",
+      /* None announced yet, so this tier is all placeholders for now. */
+      members: [],
+      panelRows: 3,
+    },
+  ] as TeamGroup[],
   panelsPerRow: 3,
 } as const;
 

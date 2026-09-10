@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Accent } from "@/lib/content";
 
 type PillVariant = "solid" | "plate" | "outline" | "dashed" | "ghost";
+type PillSize = "md" | "sm";
 
 /* Blue/ice pills are light chips carrying midnight-blue text, which is the
    only way that navy stays legible on this near-black page. Gold keeps the
@@ -35,17 +36,30 @@ export function Pill({
   children,
   accent = "blue",
   variant = "outline",
+  size = "md",
   dot = false,
   className = "",
 }: {
   children: ReactNode;
   accent?: Accent;
   variant?: PillVariant;
+  size?: PillSize;
   dot?: boolean;
   className?: string;
 }) {
-  const base =
-    "inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.2em] leading-none";
+  const base = "inline-flex items-center gap-2 rounded-full font-mono uppercase";
+
+  /* The type step lives here rather than in a caller's `className`, because
+     two competing `text-*`/`tracking-*` utilities resolve by stylesheet
+     order, not by which one the caller passed last.
+     `sm` exists for long department lines — "HEAD OF TECHNICALS &
+     DEVELOPMENT" overruns a three-across team panel at the default step — and
+     carries a real line-height so that a label which still has to wrap on a
+     narrow viewport stacks instead of colliding with itself. */
+  const sizes: Record<PillSize, string> = {
+    md: "px-4 py-1.5 text-[0.7rem] tracking-[0.2em] leading-none",
+    sm: "px-3 py-1.5 text-[0.6rem] tracking-[0.14em] leading-[1.25]",
+  };
 
   const variants: Record<PillVariant, string> = {
     solid: `${accentSolid[accent]} border border-transparent`,
@@ -58,7 +72,7 @@ export function Pill({
   };
 
   return (
-    <span className={`${base} ${variants[variant]} ${className}`}>
+    <span className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}>
       {dot ? (
         <span
           className={`h-1.5 w-1.5 rounded-full ${
