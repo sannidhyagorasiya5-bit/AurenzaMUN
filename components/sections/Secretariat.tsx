@@ -22,11 +22,24 @@ const slug = (label: string) => label.toLowerCase().replace(/[^a-z]+/g, "-");
    one, because a half-width panel there is too narrow to break the longest
    department line ("SUB-HEAD OF TECHNICALS & DEVELOPMENT") in fewer than
    three lines, and no type step small enough to fix that is worth reading.
-   auto-rows-fr holds every row to the same height, so an announced panel and
-   an empty one read as two states of one grid rather than as a filled tier
-   with filler stacked under it. */
-const GRID =
-  "grid auto-rows-fr grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-5 lg:grid-cols-3";
+   A centred wrapping flex row rather than a grid: nine heads over two
+   columns, or eleven sub-heads over three, leave a short last row, and a grid
+   would pack those leftovers against the left edge while the rows above them
+   read as centred pairs. Flex lines centre themselves, so a lone panel sits
+   between the two above it. `PANEL_WIDTH` holds each panel to exactly the
+   column width a grid would have given it, gutters deducted, so a full row is
+   unchanged; `items-stretch` (the default) keeps every panel in a line the
+   same height, which is what `auto-rows-fr` did — so an announced panel and
+   an empty one still read as two states of one row. */
+const GRID = "flex flex-wrap justify-center gap-3 sm:gap-5";
+
+/* One column below 360px, two up to `lg`, three above — minus that panel's
+   share of the gutters, which changes with the gap at `sm`. Each deduction
+   rounds up a hundredth past the exact share: a line that adds up to exactly
+   100% is one sub-pixel rounding away from wrapping a panel onto its own
+   row, and the slack is far too small to see. */
+const PANEL_WIDTH =
+  "w-full min-[360px]:w-[calc(50%-0.38rem)] sm:w-[calc(50%-0.63rem)] lg:w-[calc(33.333%-0.84rem)]";
 
 /** One team panel: an announced member, or a dashed placeholder when absent. */
 function Panel({ member, index }: { member?: TeamMember; index: number }) {
@@ -37,7 +50,7 @@ function Panel({ member, index }: { member?: TeamMember; index: number }) {
          would still be animating in the last row long after the reader got
          there. */
       delay={(index % secretariat.panelsPerRow) * 0.08}
-      className="list-none"
+      className={`list-none ${PANEL_WIDTH}`}
     >
       <TiltCard
         accent="gold"
