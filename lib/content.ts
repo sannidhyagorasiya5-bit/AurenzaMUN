@@ -523,8 +523,11 @@ export const secretariat = {
          an announcement order. Each line names the department its head
          carries above, so the two read as a pair. */
       members: [
+        { name: "Abdulqair", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
         { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
+        { name: "Hajel Rathod", role: "SUB-HEAD OF MARKETING & SPONSORS" },
         { name: "Risha Mehta", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
+        { name: "Ruqayyah Chopdawala", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
         { name: "Saanvi Bhambid", role: "SUB-HEAD OF HOSPITALITY" },
         { name: "Sai Nanivadekar", role: "SUB-HEAD OF MARKETING & SPONSORS" },
         { name: "Sairaj Salian", role: "SUB-HEAD OF BRANDING & SUPPLIES" },
