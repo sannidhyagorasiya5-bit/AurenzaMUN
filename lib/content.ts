@@ -521,7 +521,9 @@ export const secretariat = {
       label: "SUB-HEADS",
       /* Alphabetical by first name — unlike the tiers above, this one is not
          an announcement order. Each line names the department its head
-         carries above, so the two read as a pair. */
+         carries above, so the two read as a pair.
+         No `panelRows`: the tier is announced, so the grid ends at the last
+         name rather than reserving a slot nobody is going to fill. */
       members: [
         { name: "Abdulqair", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
         { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
@@ -535,7 +537,6 @@ export const secretariat = {
         { name: "Shreya Sheth", role: "SUB-HEAD OF DIGITAL MEDIA" },
         { name: "Tiksha Pant", role: "SUB-HEAD OF GRAPHICAL DEVELOPMENT" },
       ],
-      panelRows: 4,
     },
   ] as TeamGroup[],
   panelsPerRow: 3,
