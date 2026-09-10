@@ -55,10 +55,12 @@ export function Pill({
      `sm` exists for long department lines — "HEAD OF TECHNICALS &
      DEVELOPMENT" overruns a three-across team panel at the default step — and
      carries a real line-height so that a label which still has to wrap on a
-     narrow viewport stacks instead of colliding with itself. */
+     narrow viewport stacks instead of colliding with itself. It steps down
+     once more below `sm`, where the two-across team grid leaves a panel about
+     half a phone wide and the tracking is what pushes those lines over. */
   const sizes: Record<PillSize, string> = {
     md: "px-4 py-1.5 text-[0.7rem] tracking-[0.2em] leading-none",
-    sm: "px-3 py-1.5 text-[0.6rem] tracking-[0.14em] leading-[1.25]",
+    sm: "px-2.5 py-1 text-[0.55rem] tracking-[0.08em] leading-[1.3] sm:px-3 sm:py-1.5 sm:text-[0.6rem] sm:tracking-[0.14em]",
   };
 
   const variants: Record<PillVariant, string> = {

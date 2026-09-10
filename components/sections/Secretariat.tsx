@@ -16,10 +16,13 @@ const initials = (name: string) =>
 
 const slug = (label: string) => label.toLowerCase().replace(/[^a-z]+/g, "-");
 
-/* auto-rows-fr holds every row to the same height, so an announced panel and
+/* Two across even on the narrowest phone: at one per row the roster was a
+   half-dozen screens of scrolling, and the panel carries little enough — a
+   portrait, a department line and a name — to halve cleanly.
+   auto-rows-fr holds every row to the same height, so an announced panel and
    an empty one read as two states of one grid rather than as a filled tier
    with filler stacked under it. */
-const GRID = "grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-3";
+const GRID = "grid auto-rows-fr grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3";
 
 /** One team panel: an announced member, or a dashed placeholder when absent. */
 function Panel({ member, index }: { member?: TeamMember; index: number }) {
@@ -35,28 +38,33 @@ function Panel({ member, index }: { member?: TeamMember; index: number }) {
       <TiltCard
         accent="gold"
         interactive={!!member}
-        className={`flex h-full flex-col p-7 ${member ? "" : "border-dashed"}`}
+        className={`flex h-full flex-col p-4 sm:p-7 ${member ? "" : "border-dashed"}`}
       >
         {member ? (
           <>
             {/* Initials stand in until real photography lands. */}
-            <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border-glass bg-gradient-to-br from-blue/25 via-transparent to-brand/20">
-              <span className="font-display text-3xl font-bold text-foreground/80">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-glass bg-gradient-to-br from-blue/25 via-transparent to-brand/20 sm:h-28 sm:w-28 sm:rounded-2xl">
+              <span className="font-display text-xl font-bold text-foreground/80 sm:text-3xl">
                 {initials(member.name)}
               </span>
             </div>
 
-            <Pill accent="gold" variant="solid" size="sm" className="mt-6 self-start">
+            <Pill
+              accent="gold"
+              variant="solid"
+              size="sm"
+              className="mt-4 max-w-full self-start sm:mt-6"
+            >
               {member.role}
             </Pill>
-            <h4 className="mt-4 font-display text-2xl font-bold tracking-tight">
+            <h4 className="mt-2.5 font-display text-base font-bold leading-tight tracking-tight sm:mt-4 sm:text-2xl">
               {member.name}
             </h4>
           </>
         ) : (
           <div
             aria-hidden
-            className="flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl border border-dashed border-border-glass bg-surface"
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-dashed border-border-glass bg-surface sm:h-28 sm:w-28 sm:rounded-2xl"
           >
             <span className="h-2 w-2 rounded-full bg-brand/40" />
           </div>
@@ -77,17 +85,17 @@ function Group({ group }: { group: TeamGroup }) {
 
   return (
     <>
-      <Reveal className="mt-16 flex items-center gap-5">
+      <Reveal className="mt-12 flex items-center gap-4 sm:mt-16 sm:gap-5">
         <h3
           id={id}
-          className="font-display text-2xl font-bold uppercase tracking-tight sm:text-3xl"
+          className="font-display text-xl font-bold uppercase tracking-tight sm:text-3xl"
         >
           {group.label}
         </h3>
         <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-brand/40 to-transparent" />
       </Reveal>
 
-      <ul aria-labelledby={id} className={`mt-8 ${GRID}`}>
+      <ul aria-labelledby={id} className={`mt-6 sm:mt-8 ${GRID}`}>
         {Array.from({ length: panels }, (_, i) => {
           /* Indexing past the array is the point here, so read it as optional
              rather than letting the type promise a member. */
