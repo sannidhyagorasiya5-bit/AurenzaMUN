@@ -57,10 +57,14 @@ export function Pill({
      carries a real line-height so that a label which still has to wrap on a
      narrow viewport stacks instead of colliding with itself. It steps down
      once more below `sm`, where the two-across team grid leaves a panel about
-     half a phone wide and the tracking is what pushes those lines over. */
+     half a phone wide: the step is sized so the longest department line —
+     "SUB-HEAD OF TECHNICALS & DEVELOPMENT" — breaks into two lines rather
+     than three, which takes roughly 22 monospace characters per line. Nearly
+     all of that budget came out of the tracking, which buys width without
+     costing much legibility. */
   const sizes: Record<PillSize, string> = {
     md: "px-4 py-1.5 text-[0.7rem] tracking-[0.2em] leading-none",
-    sm: "px-2.5 py-1 text-[0.55rem] tracking-[0.08em] leading-[1.3] sm:px-3 sm:py-1.5 sm:text-[0.6rem] sm:tracking-[0.14em]",
+    sm: "px-2 py-1 text-[0.5rem] tracking-[0.01em] leading-[1.35] sm:px-3 sm:py-1.5 sm:text-[0.6rem] sm:tracking-[0.14em]",
   };
 
   const variants: Record<PillVariant, string> = {

@@ -525,7 +525,7 @@ export const secretariat = {
          No `panelRows`: the tier is announced, so the grid ends at the last
          name rather than reserving a slot nobody is going to fill. */
       members: [
-        { name: "Abdulqair", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
+        { name: "Abdulqadir", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
         { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
         { name: "Hajel Rathod", role: "SUB-HEAD OF MARKETING & SPONSORS" },
         { name: "Mohit Fatnani", role: "SUB-HEAD OF DIGITAL MEDIA" },

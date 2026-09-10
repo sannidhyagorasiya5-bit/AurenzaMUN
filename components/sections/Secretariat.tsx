@@ -16,13 +16,17 @@ const initials = (name: string) =>
 
 const slug = (label: string) => label.toLowerCase().replace(/[^a-z]+/g, "-");
 
-/* Two across even on the narrowest phone: at one per row the roster was a
-   half-dozen screens of scrolling, and the panel carries little enough — a
-   portrait, a department line and a name — to halve cleanly.
+/* Two across on a phone: at one per row the roster was a half-dozen screens
+   of scrolling, and the panel carries little enough — a portrait, a
+   department line and a name — to halve cleanly. Below 360px it goes back to
+   one, because a half-width panel there is too narrow to break the longest
+   department line ("SUB-HEAD OF TECHNICALS & DEVELOPMENT") in fewer than
+   three lines, and no type step small enough to fix that is worth reading.
    auto-rows-fr holds every row to the same height, so an announced panel and
    an empty one read as two states of one grid rather than as a filled tier
    with filler stacked under it. */
-const GRID = "grid auto-rows-fr grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3";
+const GRID =
+  "grid auto-rows-fr grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-5 lg:grid-cols-3";
 
 /** One team panel: an announced member, or a dashed placeholder when absent. */
 function Panel({ member, index }: { member?: TeamMember; index: number }) {
@@ -38,7 +42,7 @@ function Panel({ member, index }: { member?: TeamMember; index: number }) {
       <TiltCard
         accent="gold"
         interactive={!!member}
-        className={`flex h-full flex-col p-4 sm:p-7 ${member ? "" : "border-dashed"}`}
+        className={`flex h-full flex-col p-3 sm:p-7 ${member ? "" : "border-dashed"}`}
       >
         {member ? (
           <>
