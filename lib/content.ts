@@ -519,8 +519,17 @@ export const secretariat = {
     },
     {
       label: "SUB-HEADS",
-      /* None announced yet, so this tier is all placeholders for now. */
-      members: [],
+      /* Alphabetical by first name — unlike the tiers above, this one is not
+         an announcement order. Each line names the department its head
+         carries above, so the two read as a pair. */
+      members: [
+        { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
+        { name: "Risha Mehta", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
+        { name: "Saanvi Bhambid", role: "SUB-HEAD OF HOSPITALITY" },
+        { name: "Sai Nanivadekar", role: "SUB-HEAD OF MARKETING & SPONSORS" },
+        { name: "Sairaj Salian", role: "SUB-HEAD OF BRANDING & SUPPLIES" },
+        { name: "Tiksha Pant", role: "SUB-HEAD OF GRAPHICAL DEVELOPMENT" },
+      ],
       panelRows: 3,
     },
   ] as TeamGroup[],
