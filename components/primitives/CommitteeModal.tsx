@@ -251,6 +251,22 @@ export function CommitteeModal({
                     </div>
                   ) : null}
 
+                  {/* One line, so it reads as a row rather than a third
+                      stacked heading between the agenda and the focus list. */}
+                  {committee.chair ? (
+                    <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border-glass bg-surface px-5 py-3.5">
+                      <p
+                        className={`font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLabel[accent]}`}
+                      >
+                        Chair
+                      </p>
+                      <span className="h-3.5 w-px shrink-0 bg-border-glass" aria-hidden />
+                      <p className="font-display text-sm font-semibold leading-snug tracking-tight">
+                        {committee.chair}
+                      </p>
+                    </div>
+                  ) : null}
+
                   <p className="mt-7 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted">
                     Key Focus Areas
                   </p>

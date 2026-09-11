@@ -54,6 +54,9 @@ export type Committee = {
       "Click for agendas" chip and the dialog says so in as many words. */
   agenda?: string;
   description: string;
+  /** Named in the dialog's overview tab. Omit until the chair is confirmed —
+      the row hides itself rather than print an empty label. */
+  chair?: string;
   /** Rendered as the two-column "KEY FOCUS AREAS" list. */
   focus: string[];
   /** Heading for the second tab — "NATIONS", "CHARACTERS", "PORTFOLIOS"... */
@@ -98,6 +101,7 @@ export const committees = {
             "The rise of Doctor Doom and the emerging threat to global security: addressing the consolidation of power, sovereignty, weaponisation of advanced technology, and the international response to a new global threat.",
           description:
             "A fast-moving crisis committee set in the Marvel universe. Delegates take on the powers, allegiances and grudges of iconic heroes and villains while an escalating threat forces the room to negotiate under pressure.",
+          chair: "Trisha Shinde",
           focus: [
             "Respond to crisis updates in real time",
             "Balance personal agendas against a common threat",
@@ -120,6 +124,7 @@ export const committees = {
             "Criminalisation of politics in India: should individuals accused of serious crimes be permitted to contest elections? Electoral reforms in India: ensuring transparency, accountability and fair representation.",
           description:
             "The All India Political Parties Meet puts leaders from across the political spectrum in one room. Delegates argue as sitting politicians, defending a party line in public while searching for a consensus the country can actually live with.",
+          chair: "Atharva Devedkar",
           focus: [
             "Argue from a real party position",
             "Build cross-party consensus on contested reform",
@@ -149,6 +154,7 @@ export const committees = {
             "The crisis in Haiti: restoring security, political stability and state authority amidst gang violence, humanitarian crisis and foreign intervention.",
           description:
             "The Security Council carries primary responsibility for international peace and security. Fifteen members debate under the shadow of the veto, where a single vote decides whether the Council acts at all.",
+          chair: "Sarthak",
           focus: [
             "Draft resolutions that can survive the veto",
             "Balance sovereignty against intervention",
@@ -172,6 +178,7 @@ export const committees = {
             "Global biosecurity: balancing high-risk pathogen research with the prevention of biological threats.",
           description:
             "The World Health Organization convenes member states on global health. Delegates negotiate the financing, equity and emergency machinery that decide how the world responds when the next outbreak crosses a border.",
+          chair: "Sarthak Sinha",
           focus: [
             "Strengthen pandemic preparedness and response",
             "Close the gap in vaccine and medicine access",
@@ -195,6 +202,7 @@ export const committees = {
             "Transforming Indian agriculture: addressing farmer welfare, technology, climate resilience, rural development, food security and economic growth.",
           description:
             "NITI Aayog is the policy think tank of the Union government. Its Governing Council seats the Prime Minister, Union ministers and every Chief Minister, making it the room where national targets meet state realities.",
+          chair: "Dibyaranjan Swain",
           focus: [
             "Reconcile centre and state fiscal priorities",
             "Design measurable development targets",
@@ -221,6 +229,7 @@ export const committees = {
             "The Kurukshetra war: preventing, reshaping or waging the Great War — political alliances, succession, diplomacy and the fate of Hastinapura.",
           description:
             "Set in the Sabha of Hastinapura on the edge of the Kurukshetra war. Delegates embody the characters of the epic and argue dharma against ambition, kinship against justice, with the fate of a kingdom on the table.",
+          chair: "Kaushal Barge",
           focus: [
             "Embody a character and its contradictions",
             "Weigh kinship against justice",
@@ -252,6 +261,7 @@ export const committees = {
             "The youth question in India: education, jobs, representation, rights and the future of India’s young population.",
           description:
             "The House of the People, where the government of the day must defend its bills on the floor. Delegates sit as Members of Parliament and use motions, questions and division of the House to make or break legislation.",
+          chair: "Maaz Momin",
           focus: [
             "Master parliamentary rules of procedure",
             "Defend or dismantle a bill clause by clause",
@@ -278,6 +288,7 @@ export const committees = {
             "Indian cinema and the youth: celebrity influence, brand endorsements, creative freedom and social responsibility.",
           description:
             "The Council of States reviews what the Lok Sabha passes and speaks for the states within the Union. Debate here is slower and more technical, and it is often where a bill is actually reshaped.",
+          chair: "Aditya Tripathi",
           focus: [
             "Scrutinise legislation clause by clause",
             "Represent state interests in the Union",
@@ -304,6 +315,7 @@ export const committees = {
             "BRICS and the dollar: rethinking dollar dominance, global financial power and the future of international trade and finance.",
           description:
             "A summit of major emerging economies coordinating on trade, finance and a multipolar order. Heads of delegation negotiate outside the established financial architecture, with currencies, development banks and energy on one table.",
+          chair: "Dhruv Thakkar",
           focus: [
             "Coordinate trade and currency settlement",
             "Fund development without external conditionality",
@@ -327,6 +339,7 @@ export const committees = {
             "Resolving the political deadlock between the Indian National Congress and the All-India Muslim League over India’s constitutional future during wartime.",
           description:
             "A closed-door crisis cabinet convened as a national security emergency unfolds. Delegates hold political, military and intelligence portfolios, and every directive they pass has consequences the next update reports back.",
+          chair: "Rudra Joshi",
           focus: [
             "Issue directives on incomplete intelligence",
             "Balance military options against diplomatic cost",
@@ -351,6 +364,7 @@ export const committees = {
             "Ensuring accountability for human rights violations during the suppression of protests, and protecting fundamental freedoms.",
           description:
             "The Human Rights Council investigates and reports on violations wherever they occur. Delegates negotiate resolutions that name states, mandate rapporteurs and test how far sovereignty shields a government from scrutiny.",
+          chair: "Ethan",
           focus: [
             "Investigate violations without politicising the mandate",
             "Balance sovereignty against accountability",
@@ -374,6 +388,7 @@ export const committees = {
             "The new world order crisis: escalation of a multi-theatre global conflict and the prevention of a Third World War. The 72-hour countdown: preventing a global catastrophe amid simultaneous cyber, military, economic and diplomatic crises.",
           description:
             "A continuous crisis committee that never resets. Directives, updates and consequences carry forward across every session, so a decision taken in the first hour is still shaping the room on day two.",
+          chair: "Jai Melwani",
           focus: [
             "React to updates as they break",
             "Write directives with clear, workable mandates",

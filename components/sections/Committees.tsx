@@ -100,8 +100,26 @@ const CommitteeCard = memo(function CommitteeCard({
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-muted">{committee.name}</p>
 
+        {/* Between the committee's full name and the "View details" line, so
+            the card answers "who is chairing this?" without a tap. Tight
+            margins here and a shorter gap below: the line has to be read at a
+            glance, not grow the card by a whole row of the grid. */}
+        {committee.chair ? (
+          <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
+            <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+              Chair
+            </span>
+            {/* Display face, as everywhere the site prints a person's name. */}
+            <span className="font-display text-sm font-semibold leading-snug tracking-tight text-foreground/90">
+              {committee.chair}
+            </span>
+          </p>
+        ) : null}
+
         <span
-          className={`mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[accent]}`}
+          className={`${
+            committee.chair ? "mt-4" : "mt-6"
+          } inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] ${accentLink[accent]}`}
           aria-hidden
         >
           View details
