@@ -13,7 +13,7 @@ import { EASE } from "@/lib/motion";
 import { smoothScrollTo } from "@/lib/scroll";
 import { useCoarsePointer } from "@/lib/pointer";
 
-type Variant = "primary" | "secondary" | "ghost" | "disabled";
+type Variant = "primary" | "outline" | "secondary" | "ghost" | "disabled";
 
 /* Every state below is paired hover/active. `hover:` alone is scoped to
    @media (hover: hover), which left these buttons completely inert on a
@@ -21,6 +21,10 @@ type Variant = "primary" | "secondary" | "ghost" | "disabled";
 const variantClass: Record<Variant, string> = {
   primary:
     "bg-brand text-brand-fg font-semibold shadow-[0_10px_40px_-10px] shadow-brand/60 hover:shadow-brand/80 active:shadow-brand/90",
+  /* The primary's gold, worn as an outline: second in weight to the filled
+     button, but plainly the same door. */
+  outline:
+    "glass font-semibold text-brand border-brand/50 hover:border-brand active:border-brand",
   secondary:
     "glass text-foreground border-border-glass hover:border-brand/60 hover:text-brand active:border-brand/70 active:text-brand",
   ghost: "text-muted hover:text-foreground active:text-brand",

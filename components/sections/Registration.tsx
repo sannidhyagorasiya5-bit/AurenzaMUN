@@ -74,7 +74,7 @@ export function Registration() {
                 <div className="mt-3">
                   <MagneticButton
                     href={registration.card.delegation.href}
-                    variant="secondary"
+                    variant="outline"
                     className="w-full"
                     ariaLabel={`${registration.card.delegation.button} — opens in a new tab`}
                   >
