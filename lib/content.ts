@@ -385,7 +385,7 @@ export const committees = {
           abbr: "C.C.C",
           name: "Continuous Crisis Committee",
           agenda:
-            "The new world order crisis: escalation of a multi-theatre global conflict and the prevention of a Third World War. The 72-hour countdown: preventing a global catastrophe amid simultaneous cyber, military, economic and diplomatic crises.",
+            "1975: a world where the Axis won; shaping the future of a new world order.",
           description:
             "A continuous crisis committee that never resets. Directives, updates and consequences carry forward across every session, so a decision taken in the first hour is still shaping the room on day two.",
           chair: "Jai Melwani",
