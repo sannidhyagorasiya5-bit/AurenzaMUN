@@ -154,7 +154,7 @@ export const committees = {
             "The crisis in Haiti: restoring security, political stability and state authority amidst gang violence, humanitarian crisis and foreign intervention.",
           description:
             "The Security Council carries primary responsibility for international peace and security. Fifteen members debate under the shadow of the veto, where a single vote decides whether the Council acts at all.",
-          chair: "Sarthak",
+          chair: "Sarthak Sabde",
           focus: [
             "Draft resolutions that can survive the veto",
             "Balance sovereignty against intervention",
