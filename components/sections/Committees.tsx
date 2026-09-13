@@ -105,8 +105,10 @@ const CommitteeCard = memo(function CommitteeCard({
             margins here and a shorter gap below: the line has to be read at a
             glance, not grow the card by a whole row of the grid. */}
         {committee.chair ? (
-          <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
-            <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+            {/* Gold pill, the same plate the agenda chip wears, so the label
+                reads as a tag on the name rather than a second line of prose. */}
+            <span className="rounded-full bg-brand/15 px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-brand">
               Chair
             </span>
             {/* Display face, as everywhere the site prints a person's name. */}
