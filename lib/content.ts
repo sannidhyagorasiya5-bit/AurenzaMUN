@@ -258,7 +258,7 @@ export const committees = {
           abbr: "LOK SABHA",
           name: "House of the People",
           agenda:
-            "The youth question in India: education, jobs, representation, rights and the future of India’s young population.",
+            "Examining constitutional rights, democratic representation, education and employment of India’s young population.",
           description:
             "The House of the People, where the government of the day must defend its bills on the floor. Delegates sit as Members of Parliament and use motions, questions and division of the House to make or break legislation.",
           chair: "Maaz Momin",
