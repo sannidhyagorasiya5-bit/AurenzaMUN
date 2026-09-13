@@ -312,7 +312,7 @@ export const committees = {
           abbr: "BRICS SUMMIT",
           name: "BRICS Summit",
           agenda:
-            "BRICS and the dollar: rethinking dollar dominance, global financial power and the future of international trade and finance.",
+            "To examine the evolving role of BRICS in challenging dollar dominance, and its implications for global financial power, international trade and the future of the international financial system.",
           description:
             "A summit of major emerging economies coordinating on trade, finance and a multipolar order. Heads of delegation negotiate outside the established financial architecture, with currencies, development banks and energy on one table.",
           chair: "Dhruv Thakkar",
