@@ -285,7 +285,7 @@ export const committees = {
           abbr: "RAJYA SABHA",
           name: "Council of States",
           agenda:
-            "Indian cinema and the youth: celebrity influence, brand endorsements, creative freedom and social responsibility.",
+            "Deliberation on the need for comprehensive reform of the anti-defection law, to strike a balance between party discipline, political stability and the constitutional freedoms of elected representatives.",
           description:
             "The Council of States reviews what the Lok Sabha passes and speaks for the states within the Union. Debate here is slower and more technical, and it is often where a bill is actually reshaped.",
           chair: "Aditya Tripathi",
