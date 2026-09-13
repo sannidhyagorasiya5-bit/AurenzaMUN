@@ -475,6 +475,14 @@ export const registration = {
     button: "Open the Google Form",
     /** Live Google Form. The card's button opens it in a new tab. */
     href: "https://forms.gle/33XbJd9G31vzCe4J7",
+    /** A school sending a whole contingent files one of these instead of a
+        form per delegate, so it sits under the individual form rather than
+        beside it. */
+    delegation: {
+      note: "Registering a full delegation from your school or college?",
+      button: "Delegation Form",
+      href: "https://forms.gle/AJZYRNoBjeMimcPY8",
+    },
   },
   details: [
     { label: "Deadline", value: "Late September 2026" },

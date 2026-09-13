@@ -64,6 +64,25 @@ export function Registration() {
                 </MagneticButton>
               </div>
 
+              {/* Second, quieter door. Most readers want the form above; the
+                  one teacher registering twenty delegates needs this one, and
+                  the note is what tells them so. */}
+              <div className="mt-5 border-t border-border-glass pt-5">
+                <p className="text-xs leading-relaxed text-muted">
+                  {registration.card.delegation.note}
+                </p>
+                <div className="mt-3">
+                  <MagneticButton
+                    href={registration.card.delegation.href}
+                    variant="secondary"
+                    className="w-full"
+                    ariaLabel={`${registration.card.delegation.button} — opens in a new tab`}
+                  >
+                    {registration.card.delegation.button}
+                  </MagneticButton>
+                </div>
+              </div>
+
               <dl className="mt-8 flex flex-col gap-4 border-t border-border-glass pt-6">
                 {registration.details.map((d) => (
                   <div key={d.label} className="flex items-start justify-between gap-4">
