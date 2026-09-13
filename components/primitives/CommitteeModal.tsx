@@ -245,7 +245,9 @@ export function CommitteeModal({
                       >
                         Official Agenda
                       </p>
-                      <p className="mt-2 font-display text-base font-semibold leading-snug tracking-tight sm:text-lg">
+                      {/* whitespace-pre-line: a committee with two agendas
+                          breaks them apart with a blank line of its own. */}
+                      <p className="mt-2 whitespace-pre-line font-display text-base font-semibold leading-snug tracking-tight sm:text-lg">
                         &ldquo;{committee.agenda}&rdquo;
                       </p>
                     </div>

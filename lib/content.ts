@@ -121,7 +121,7 @@ export const committees = {
           abbr: "AIPPM",
           name: "All India Political Parties Meet",
           agenda:
-            "Agenda A: discussion and deliberation on the constitutional validity of anti-conversion laws in India. Agenda B: discussion upon Article 19(1)(a) — freedom of speech and expression, with special emphasis on press freedom in India.",
+            "Agenda A: discussion and deliberation on the constitutional validity of anti-conversion laws in India.\n\nAgenda B: discussion upon Article 19(1)(a) — freedom of speech and expression, with special emphasis on press freedom in India.",
           description:
             "The All India Political Parties Meet puts leaders from across the political spectrum in one room. Delegates argue as sitting politicians, defending a party line in public while searching for a consensus the country can actually live with.",
           chair: "Atharva Devedkar",
