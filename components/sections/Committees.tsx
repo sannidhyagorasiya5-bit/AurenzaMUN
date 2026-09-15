@@ -106,9 +106,9 @@ const CommitteeCard = memo(function CommitteeCard({
             glance, not grow the card by a whole row of the grid. */}
         {committee.chair ? (
           <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-            {/* Gold pill, the same plate the agenda chip wears, so the label
-                reads as a tag on the name rather than a second line of prose. */}
-            <span className="rounded-full bg-brand/15 px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-brand">
+            {/* White pill, so the label reads as a tag on the name rather than
+                a second line of prose, and leaves the gold to the accents. */}
+            <span className="rounded-full bg-foreground/10 px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-foreground">
               Chair
             </span>
             {/* Display face, as everywhere the site prints a person's name. */}

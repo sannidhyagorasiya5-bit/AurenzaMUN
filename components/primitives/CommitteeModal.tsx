@@ -257,9 +257,9 @@ export function CommitteeModal({
                       stacked heading between the agenda and the focus list. */}
                   {committee.chair ? (
                     <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border-glass bg-surface px-5 py-3.5">
-                      {/* The same gold pill the card wears, so the row reads
+                      {/* The same white pill the card wears, so the row reads
                           as the panel's label carried through the tap. */}
-                      <p className="rounded-full bg-brand/15 px-2.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-brand">
+                      <p className="rounded-full bg-foreground/10 px-2.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-foreground">
                         Chair
                       </p>
                       <p className="font-display text-sm font-semibold leading-snug tracking-tight">
