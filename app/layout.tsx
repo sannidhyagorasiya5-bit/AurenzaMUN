@@ -18,7 +18,14 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["500", "600", "700"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
+  : process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "AurenzaMUN — Model United Nations · SVIS Kandivali",
   description:
     "AurenzaMUN is a Premier Model United Nations Conference Bringing Together Student Diplomats From Across Mumbai. 10 & 11 October 2026 · SVIS Kandivali. Debate, collaborate, and resolve the world's toughest challenges.",
@@ -27,10 +34,7 @@ export const metadata: Metadata = {
     description:
       "A Premier Model United Nations Conference For Student Diplomats Across Mumbai. 10 & 11 October 2026 · SVIS Kandivali.",
     type: "website",
-  },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    images: [{ url: "/logo.png", width: 685, height: 685, alt: "AurenzaMUN" }],
   },
 };
 

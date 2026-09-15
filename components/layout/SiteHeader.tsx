@@ -74,7 +74,7 @@ export function SiteHeader() {
           className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-foreground transition-transform duration-200 active:scale-95"
         >
           <Image
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="AurenzaMUN"
             width={36}
             height={36}
