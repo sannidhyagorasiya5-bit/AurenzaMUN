@@ -44,7 +44,7 @@ export function Hero() {
               aria-label={`${hero.badges[1]} — open in Google Maps`}
               className="inline-block transition-all duration-200 hover:opacity-80 active:scale-95 active:opacity-70"
             >
-              <Pill accent="blue" dot className="cursor-pointer underline decoration-blue-deep/50 underline-offset-4 hover:decoration-blue-deep">
+              <Pill accent="blue" dot className="cursor-pointer">
                 {hero.badges[1]}
               </Pill>
             </a>
