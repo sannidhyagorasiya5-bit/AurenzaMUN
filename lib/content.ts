@@ -431,6 +431,7 @@ export const committees = {
           name: "International Press · open to both school & college delegates",
           description:
             "The International Press covers every committee at the conference. Delegates work as reporters, photographers and caricaturists, filing copy on debates as they happen and holding the floor to account.",
+          chair: "Shriya Rajan",
           focus: [
             "File accurate copy under deadline",
             "Interview delegates and chairs on the record",
