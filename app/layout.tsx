@@ -49,6 +49,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
     >
+      <head>
+        {/* Declared by hand so the emblem wins over any convention-based or
+            cached icon the host serves. */}
+        <link rel="icon" type="image/png" href="/logo.png?v=2" sizes="any" />
+        <link rel="shortcut icon" type="image/png" href="/logo.png?v=2" />
+        <link rel="apple-touch-icon" type="image/png" href="/logo.png?v=2" />
+      </head>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
