@@ -563,7 +563,7 @@ export const secretariat = {
         { name: "Sai Nanivadekar", role: "SUB-HEAD OF MARKETING & SPONSORS" },
         { name: "Mohit Fatnani", role: "SUB-HEAD OF PHOTOGRAPHY" },
         { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
-        { name: "Abdulqadir", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
+        { name: "Abdulqadir Kherywala", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
       ],
     },
   ] as TeamGroup[],
