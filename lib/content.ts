@@ -178,7 +178,7 @@ export const committees = {
             "Global biosecurity: balancing high-risk pathogen research with the prevention of biological threats.",
           description:
             "The World Health Organization convenes member states on global health. Delegates negotiate the financing, equity and emergency machinery that decide how the world responds when the next outbreak crosses a border.",
-          chair: "Sarthak Sinha",
+          chair: "Shaurya Gupta",
           focus: [
             "Strengthen pandemic preparedness and response",
             "Close the gap in vaccine and medicine access",
@@ -364,7 +364,7 @@ export const committees = {
             "Ensuring accountability for human rights violations during the suppression of protests, and protecting fundamental freedoms.",
           description:
             "The Human Rights Council investigates and reports on violations wherever they occur. Delegates negotiate resolutions that name states, mandate rapporteurs and test how far sovereignty shields a government from scrutiny.",
-          chair: "Ethan",
+          chair: "Sarthak Sinha",
           focus: [
             "Investigate violations without politicising the mandate",
             "Balance sovereignty against accountability",
