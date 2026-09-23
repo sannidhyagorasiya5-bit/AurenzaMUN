@@ -546,16 +546,15 @@ export const secretariat = {
       /* Grouped by department, alphabetically, and alphabetically by name
          within a department — so the two who share one land side by side and
          each line names the department its head carries above, letting the
-         pair read together. At three across both shared departments happen to
-         fall inside a row rather than across a break; two across splits the
-         creative pair, and holding it together there would cost either the
-         ordering or a placeholder panel, which is the worse trade.
+         pair read together. At three across the creative pair opens a row
+         while the marketing pair straddles a break; keeping both whole would
+         cost either the ordering or a placeholder panel, which is the worse
+         trade.
          No `panelRows`: the tier is announced, so the grid ends at the last
          name rather than reserving a slot nobody is going to fill. */
       members: [
-        { name: "Sairaj Salian", role: "SUB-HEAD OF BRANDING & SUPPLIES" },
+        { name: "Mahi Salla", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
         { name: "Risha Mehta", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
-        { name: "Ruqayyah Chopdawala", role: "SUB-HEAD OF CREATIVE & FINE ARTS" },
         { name: "Shreya Sheth", role: "SUB-HEAD OF DIGITAL MEDIA" },
         { name: "Tiksha Pant", role: "SUB-HEAD OF GRAPHICAL DEVELOPMENT" },
         { name: "Saanvi Bhambid", role: "SUB-HEAD OF HOSPITALITY" },
@@ -563,7 +562,6 @@ export const secretariat = {
         { name: "Sai Nanivadekar", role: "SUB-HEAD OF MARKETING & SPONSORS" },
         { name: "Mohit Fatnani", role: "SUB-HEAD OF PHOTOGRAPHY" },
         { name: "Diyaan Doshi", role: "SUB-HEAD OF SECURITY" },
-        { name: "Abdulqadir Kherywala", role: "SUB-HEAD OF TECHNICALS & DEVELOPMENT" },
       ],
     },
   ] as TeamGroup[],
@@ -611,15 +609,8 @@ export const social = {
     {
       name: "Instagram",
       handle: "@AurenzaMUN",
-      href: "https://www.instagram.com/aurenzamun/",
+      href: "https://www.instagram.com/aurenza_mun",
       cta: "Follow on Instagram",
-      external: true,
-    },
-    {
-      name: "YouTube",
-      handle: "@AurenzaMUN2026",
-      href: "https://www.youtube.com/@AurenzaMUN2026",
-      cta: "Follow on YouTube",
       external: true,
     },
     {
