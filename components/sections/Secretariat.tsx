@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { TeamGroup, TeamMember } from "@/lib/content";
 import { secretariat } from "@/lib/content";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
@@ -22,8 +23,8 @@ const slug = (label: string) => label.toLowerCase().replace(/[^a-z]+/g, "-");
    one, because a half-width panel there is too narrow to break the longest
    department line ("SUB-HEAD OF TECHNICALS & DEVELOPMENT") in fewer than
    three lines, and no type step small enough to fix that is worth reading.
-   A centred wrapping flex row rather than a grid: nine heads over two
-   columns, or eleven sub-heads over three, leave a short last row, and a grid
+   A centred wrapping flex row rather than a grid: ten heads over three
+   columns, or nine sub-heads over two, leave a short last row, and a grid
    would pack those leftovers against the left edge while the rows above them
    read as centred pairs. Flex lines centre themselves, so a lone panel sits
    between the two above it. `PANEL_WIDTH` holds each panel to exactly the
@@ -59,11 +60,21 @@ function Panel({ member, index }: { member?: TeamMember; index: number }) {
       >
         {member ? (
           <>
-            {/* Initials stand in until real photography lands. */}
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-glass bg-gradient-to-br from-blue/25 via-transparent to-brand/20 sm:h-28 sm:w-28 sm:rounded-2xl">
-              <span className="font-display text-xl font-bold text-foreground/80 sm:text-3xl">
-                {initials(member.name)}
-              </span>
+            {/* Initials stand in for anyone whose portrait has not landed. */}
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-glass bg-gradient-to-br from-blue/25 via-transparent to-brand/20 sm:h-28 sm:w-28 sm:rounded-2xl">
+              {member.photo ? (
+                <Image
+                  src={member.photo}
+                  alt={member.name}
+                  fill
+                  className="object-cover object-center"
+                  sizes="(min-width: 640px) 112px, 64px"
+                />
+              ) : (
+                <span className="font-display text-xl font-bold text-foreground/80 sm:text-3xl">
+                  {initials(member.name)}
+                </span>
+              )}
             </div>
 
             <Pill
