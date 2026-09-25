@@ -525,7 +525,7 @@ export const secretariat = {
     {
       label: "GENERALS",
       members: [
-        { name: "Ruqaiyah Bharmal", role: "SECRETARY GENERAL" },
+        { name: "Ruqaiyah Bharmal", role: "SECRETARY GENERAL", photo: "/team/ruqaiyah-bharmal.webp" },
         { name: "Arnav Bohra", role: "DIRECTOR GENERAL", photo: "/team/arnav-bohra.webp" },
       ],
     },
