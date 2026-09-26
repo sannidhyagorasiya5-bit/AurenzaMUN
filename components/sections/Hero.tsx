@@ -49,7 +49,7 @@ export function Hero() {
       ref={ref}
       id="top"
       aria-label="AurenzaMUN introduction"
-      className="relative isolate flex flex-col overflow-hidden px-5 pb-12 pt-24 sm:min-h-[100dvh] sm:px-8 sm:pb-14 sm:pt-28"
+      className="relative isolate flex flex-col overflow-hidden px-5 pb-12 pt-24 sm:px-8 sm:pb-14 sm:pt-28 hero-wide:min-h-[100dvh]"
     >
       {/* The paint flow. Its lower edge is masked away so it dissolves into
           the voxel backdrop instead of ending on a hard line. */}
@@ -102,7 +102,7 @@ export function Hero() {
 
         <motion.div
           style={reduce ? undefined : { y: typeY }}
-          className="mt-12 sm:mt-auto sm:pt-16"
+          className="mt-12 sm:mt-16 hero-wide:mt-auto hero-wide:pt-16"
         >
           <AnimatedHeading
             as="h1"

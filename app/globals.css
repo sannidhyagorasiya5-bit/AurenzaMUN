@@ -40,6 +40,12 @@
   --border-glass: rgba(255, 255, 255, 0.1);
 }
 
+/* Screens wide enough for the full-height, bottom-anchored hero. Tall
+   screens (portrait tablets, open foldables, which are nearly square) keep
+   the phone's stacked hero instead: pinning the headline to the bottom of
+   a tall viewport left a dead band of black under the badges. */
+@custom-variant hero-wide (@media (min-width: 40rem) and (min-aspect-ratio: 5/4));
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -114,6 +120,10 @@ section[id] {
   z-index: 60;
   pointer-events: none;
   opacity: 0.06;
+  /* Its own compositor layer, rasterised once: iOS otherwise repaints a
+     fixed overlay as the page scrolls under it. */
+  transform: translateZ(0);
+  contain: strict;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 

@@ -4,6 +4,7 @@ import { Fragment, useRef } from "react";
 import {
   motion,
   useAnimationFrame,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -42,9 +43,12 @@ export function Marquee({
   const factor = useTransform(smooth, [0, 1000], [0, 4], { clamp: false });
   const x = useTransform(baseX, (v) => `${wrap(-50, 0, v)}%`);
   const dir = useRef(1);
+  const ref = useRef<HTMLDivElement>(null);
+  /* Off screen it neither moves nor costs a style write per frame. */
+  const inView = useInView(ref, { margin: "100px 0px" });
 
   useAnimationFrame((_, delta) => {
-    if (reduce) return;
+    if (reduce || !inView) return;
     let move = dir.current * baseVelocity * (delta / 1000);
     const f = factor.get();
     if (f < 0) dir.current = -1;
@@ -71,7 +75,7 @@ export function Marquee({
   );
 
   return (
-    <div aria-hidden className={`flex w-full overflow-hidden ${className}`}>
+    <div ref={ref} aria-hidden className={`flex w-full overflow-hidden ${className}`}>
       <motion.div className="flex w-max shrink-0" style={{ x }}>
         {group}
         {group}

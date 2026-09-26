@@ -2,103 +2,264 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
+import { perfTier, prefersSaveData } from "@/lib/device";
 
 /**
  * Voxel cube stack (exported from Unicorn Studio's Amphorae template) as a
- * faint ghost behind the whole site: tinted gold, blurred, and screened onto
- * the plain dark background at 10% so the clip's black adds nothing and only
- * the lit cube faces show, barely.
+ * faint gold ghost behind the whole site. Page position maps onto the clip,
+ * so the stack builds as you read down and is complete at the footer.
  *
- * It only moves when the page does. Page position maps onto the clip, so
- * the stack builds as you read down and is complete at the footer:
- *   - behind that position (scrolling down), the video *plays* toward it at
- *     a rate proportional to the gap, because this file's sparse keyframes
- *     make every seek cost ~70ms, and playback decodes smoothly;
- *   - ahead of it (scrolling up), it seeks back, one seek in flight at a
- *     time so requests never pile up;
- *   - at rest it is paused.
- * Reduced motion shows a single, fully built frame.
+ * It used to be a live <video> under a blur, a colour filter and a blend
+ * mode, seeking or playing on every scroll frame. That full-screen filter
+ * chain and the ~70ms seeks (the file's keyframes are sparse) were the
+ * single biggest cost on phones. Now, once the page has loaded and gone
+ * idle, the clip is sampled once into a few dozen small frames with the
+ * tint and the 10% screen already baked into their pixels, and the video is
+ * released. Scrolling then only crossfades two neighbouring frames onto one
+ * small opaque canvas, which the browser upscales; the upscale is what
+ * gives the old blur's softness, for free.
+ *
+ * Reduced motion bakes a single, nearly built frame. Data Saver skips the
+ * download and leaves the plain dark background.
  */
 const SRC = "/voxel-cube-stack.mp4";
 
-/** Within this many seconds of the target the clip counts as caught up. */
-const CATCH_UP = 0.06;
-/** Past this far ahead of the target, seek back instead of waiting. */
-const REWIND = 0.2;
+const BG = [7, 8, 11] as const; // --background
+const GOLD = [229, 192, 99] as const; // --brand
+/** The old layer's opacity, now baked into the pixels. */
+const STRENGTH = 0.1;
+/** CSS px per baked px: the softness the old 8px blur gave. */
+const SOFTNESS = 5;
+
+const FRAMES = { low: 24, mid: 36, high: 48 } as const;
+
+/** Resolves once the seek lands, or after a timeout so one bad seek never stalls the bake. */
+function seek(v: HTMLVideoElement, t: number) {
+  return new Promise<void>((resolve) => {
+    const done = () => {
+      clearTimeout(timer);
+      v.removeEventListener("seeked", done);
+      resolve();
+    };
+    const timer = setTimeout(done, 3000);
+    v.addEventListener("seeked", done);
+    v.currentTime = t;
+  });
+}
+
+function whenReady(v: HTMLVideoElement) {
+  return new Promise<boolean>((resolve) => {
+    if (v.readyState >= 2) return resolve(true);
+    const ok = () => finish(true);
+    const fail = () => finish(false);
+    const timer = setTimeout(fail, 15000);
+    function finish(r: boolean) {
+      clearTimeout(timer);
+      v.removeEventListener("loadeddata", ok);
+      v.removeEventListener("error", fail);
+      resolve(r);
+    }
+    v.addEventListener("loadeddata", ok);
+    v.addEventListener("error", fail);
+    v.preload = "auto";
+    v.load();
+    /* iOS will not fetch frame data for a video nobody has played. */
+    void v.play().then(() => v.pause()).catch(() => {});
+  });
+}
+
+/** Coarse-to-fine order (every 8th frame, then every 4th, ...), so the whole scroll range is covered early. */
+function bakeOrder(n: number) {
+  const order: number[] = [];
+  const seen = new Set<number>();
+  for (let stride = 8; stride >= 1; stride /= 2) {
+    for (let i = 0; i < n; i += stride) {
+      if (!seen.has(i)) {
+        seen.add(i);
+        order.push(i);
+      }
+    }
+  }
+  if (!seen.has(n - 1)) order.splice(1, 0, n - 1);
+  return order;
+}
 
 export function SiteBackdrop() {
-  const ref = useRef<HTMLVideoElement>(null);
+  const ref = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
+    const canvas = ref.current;
+    const v = videoRef.current;
+    if (!canvas || !v || prefersSaveData()) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
 
-    const progress = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-    };
-
-    if (reduce) {
-      const still = () => {
-        v.currentTime = v.duration * 0.8;
-      };
-      if (v.readyState >= 1) still();
-      else v.addEventListener("loadedmetadata", still, { once: true });
-      return () => v.removeEventListener("loadedmetadata", still);
-    }
-
-    let seeking = false;
-    const onSeeked = () => {
-      seeking = false;
-    };
-    v.addEventListener("seeked", onSeeked);
-
-    /* One rAF loop reading the scroll position (Lenis moves the page on its
-       own frames), rather than a scroll listener. */
+    let cancelled = false;
     let raf = 0;
-    function loop() {
-      raf = requestAnimationFrame(loop);
-      if (!v || !v.duration || v.readyState < 2) return;
+    const frames: (HTMLCanvasElement | null)[] = [];
+    const count = reduce ? 1 : FRAMES[perfTier()];
 
-      const target = progress() * (v.duration - 0.05);
-      const gap = target - v.currentTime;
+    /* -- scroll -> frame ------------------------------------------------ */
+    let maxScroll = 1;
+    const measure = () => {
+      maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+    const target = () => Math.min(1, Math.max(0, window.scrollY / maxScroll));
 
-      if (gap > CATCH_UP) {
-        v.playbackRate = Math.min(4, Math.max(0.35, gap * 1.6));
-        if (v.paused) void v.play().catch(() => {});
-      } else if (gap < -REWIND) {
-        if (!v.paused) v.pause();
-        if (!seeking) {
-          seeking = true;
-          v.currentTime = target;
-        }
-      } else if (!v.paused) {
-        v.pause();
+    let shown = -1;
+    let drawn = -1;
+
+    function draw(p: number) {
+      if (!ctx || !canvas) return;
+      const f = p * (count - 1);
+      let lo = -1;
+      let hi = -1;
+      for (let i = Math.floor(f); i >= 0; i--) if (frames[i]) { lo = i; break; }
+      for (let i = Math.ceil(f); i < count; i++) if (frames[i]) { hi = i; break; }
+      if (lo < 0) lo = hi;
+      if (hi < 0) hi = lo;
+      if (lo < 0) return;
+
+      ctx.globalAlpha = 1;
+      ctx.drawImage(frames[lo]!, 0, 0);
+      if (hi !== lo) {
+        ctx.globalAlpha = (f - lo) / (hi - lo);
+        ctx.drawImage(frames[hi]!, 0, 0);
       }
+      drawn = p;
     }
-    raf = requestAnimationFrame(loop);
+
+    /* Eases the shown position toward the scroll position, then sleeps
+       until the page moves again: nothing runs while the reader is still. */
+    function step() {
+      raf = 0;
+      const t = reduce ? 0 : target();
+      shown = shown < 0 ? t : shown + (t - shown) * 0.14;
+      if (Math.abs(t - shown) < 0.0004) shown = t;
+      if (Math.abs(shown - drawn) > 0.0002) draw(shown);
+      if (shown !== t) raf = requestAnimationFrame(step);
+    }
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(step);
+    };
+
+    const ro = new ResizeObserver(() => {
+      measure();
+      kick();
+    });
+
+    /* -- bake -------------------------------------------------------------- */
+    async function bake() {
+      if (!v || !(await whenReady(v)) || cancelled || !v.duration) return;
+      v.pause();
+
+      const aspect = v.videoWidth / v.videoHeight || 16 / 9;
+      /* Size the frames from how wide the clip is shown once it covers the
+         screen, so the softness matches on a phone and on a monitor. */
+      const shownWidth = Math.max(window.innerWidth, window.innerHeight * aspect);
+      const w = Math.round(Math.min(400, Math.max(64, shownWidth / SOFTNESS)));
+      const h = Math.max(1, Math.round(w / aspect));
+      canvas!.width = w;
+      canvas!.height = h;
+      ctx!.fillStyle = `rgb(${BG.join(",")})`;
+      ctx!.fillRect(0, 0, w, h);
+
+      /* Two-step downscale, so fine voxel edges average rather than alias. */
+      const mid = document.createElement("canvas");
+      mid.width = w * 2;
+      mid.height = h * 2;
+      const mctx = mid.getContext("2d", { willReadFrequently: false })!;
+      mctx.imageSmoothingQuality = "high";
+
+      const span = Math.max(0, v.duration - 0.05);
+      const order = reduce ? [0] : bakeOrder(count);
+
+      for (const i of order) {
+        if (cancelled) return;
+        await seek(v, reduce ? v.duration * 0.8 : (i / Math.max(1, count - 1)) * span);
+        if (cancelled) return;
+
+        mctx.drawImage(v, 0, 0, mid.width, mid.height);
+        const out = document.createElement("canvas");
+        out.width = w;
+        out.height = h;
+        const octx = out.getContext("2d", { willReadFrequently: true })!;
+        octx.imageSmoothingQuality = "high";
+        octx.drawImage(mid, 0, 0, w, h);
+
+        /* grayscale -> gold -> screened at 10% over the page background */
+        const img = octx.getImageData(0, 0, w, h);
+        const d = img.data;
+        for (let p = 0; p < d.length; p += 4) {
+          const l = Math.min(1, ((0.2126 * d[p] + 0.7152 * d[p + 1] + 0.0722 * d[p + 2]) / 255) * 1.1) * 0.85;
+          for (let c = 0; c < 3; c++) {
+            const tint = (GOLD[c] / 255) * l;
+            const bg = BG[c] / 255;
+            d[p + c] = Math.round((bg + STRENGTH * tint * (1 - bg)) * 255);
+          }
+        }
+        octx.putImageData(img, 0, 0);
+        frames[i] = out;
+
+        drawn = -1;
+        kick();
+        if (!canvas!.style.opacity) canvas!.style.opacity = "1";
+        /* Let scrolling and input breathe between samples. */
+        await new Promise((r) => setTimeout(r, 16));
+      }
+
+      /* Every frame is in hand: free the decoder and the download. */
+      v.removeAttribute("src");
+      v.load();
+    }
+
+    measure();
+    ro.observe(document.body);
+    window.addEventListener("scroll", kick, { passive: true });
+
+    /* Start only once the page has loaded and gone idle, so the clip never
+       competes with the hero, the fonts or the first scroll. */
+    const hasIdle = "requestIdleCallback" in window;
+    let idleId = 0;
+    const start = () => {
+      idleId = hasIdle
+        ? window.requestIdleCallback(() => void bake(), { timeout: 2500 })
+        : window.setTimeout(() => void bake(), 1200);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
-      v.removeEventListener("seeked", onSeeked);
+      ro.disconnect();
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("load", start);
+      if (hasIdle) window.cancelIdleCallback(idleId);
+      else clearTimeout(idleId);
       v.pause();
     };
   }, [reduce]);
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-50 overflow-hidden bg-background">
-      {/* Greyscale source, pushed to gold: sepia gives warmth, saturation
-          and a small hue turn land it on the brand gold. Scaled up so the
-          blur never shows a soft edge. */}
-      <video
+      <canvas
         ref={ref}
+        width={1}
+        height={1}
+        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000"
+      />
+      {/* Only a source to sample from; never shown. */}
+      <video
+        ref={videoRef}
         src={SRC}
         muted
         playsInline
-        preload="auto"
+        preload="none"
         disablePictureInPicture
-        className="absolute inset-0 h-full w-full scale-110 object-cover opacity-[0.1] mix-blend-screen [filter:grayscale(1)_sepia(1)_saturate(2.1)_hue-rotate(-6deg)_brightness(0.85)_blur(8px)]"
+        className="absolute left-0 top-0 h-px w-px opacity-0"
       />
     </div>
   );

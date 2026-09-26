@@ -215,7 +215,7 @@ export function Registration() {
                 <div className="surface relative overflow-hidden p-7 sm:p-8">
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute -right-24 -top-24 h-60 w-60 rounded-full bg-brand/20 blur-3xl"
+                    className="pointer-events-none absolute -right-32 -top-32 h-76 w-76 rounded-full bg-[radial-gradient(closest-side,rgba(229,192,99,0.2),rgba(229,192,99,0.08)_55%,transparent)]"
                   />
                   <Pill variant="solid" live>
                     Registrations open

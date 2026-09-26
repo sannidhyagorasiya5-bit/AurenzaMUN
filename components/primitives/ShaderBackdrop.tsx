@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
+import { perfTier } from "@/lib/device";
 
 /* Domain-warped fbm: slow gold light drifting through navy fog, leaning a
    little toward the pointer. Dark in the lower left, where the hero type
    sits, so the headline always reads. */
-const FRAG = `
+const FRAG = (octaves: number) => `
 precision mediump float;
 uniform vec2 uRes;
 uniform float uTime;
@@ -23,7 +24,7 @@ float noise(vec2 p) {
 float fbm(vec2 p) {
   float v = 0.0, a = 0.5;
   mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
-  for (int i = 0; i < 5; i++) { v += a * noise(p); p = m * p; a *= 0.5; }
+  for (int i = 0; i < ${octaves}; i++) { v += a * noise(p); p = m * p; a *= 0.5; }
   return v;
 }
 
@@ -64,11 +65,20 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return s;
 }
 
+/* What each device tier can afford. The flow drifts slowly enough that 30
+   or even 24 frames a second reads the same as 60, and the finest octave is
+   below what a low-resolution buffer can show anyway. */
+const QUALITY = {
+  high: { scale: 0.5, octaves: 5, fps: 60 },
+  mid: { scale: 0.34, octaves: 4, fps: 30 },
+  low: { scale: 0.25, octaves: 4, fps: 24 },
+} as const;
+
 /**
  * Hand-written WebGL "paint flow" behind the hero. Renders at reduced
- * resolution (it is soft by nature), stops when off screen or the tab is
- * hidden, and paints a single still frame under reduced motion. No WebGL:
- * the CSS gradient behind it shows instead.
+ * resolution (it is soft by nature) and frame rate on phones, stops when
+ * off screen or the tab is hidden, and paints a single still frame under
+ * reduced motion. No WebGL: the CSS gradient behind it shows instead.
  */
 export function ShaderBackdrop({
   className = "",
@@ -94,12 +104,20 @@ export function ShaderBackdrop({
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+    const gl = canvas.getContext("webgl", {
+      antialias: false,
+      alpha: false,
+      depth: false,
+      stencil: false,
+      preserveDrawingBuffer: false,
+      powerPreference: "low-power",
+    });
     if (!gl) return;
 
+    const quality = QUALITY[perfTier()];
     const prog = gl.createProgram()!;
     gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
-    gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+    gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG(quality.octaves)));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
     gl.useProgram(prog);
@@ -116,13 +134,21 @@ export function ShaderBackdrop({
     const uMouse = gl.getUniformLocation(prog, "uMouse");
     gl.uniform1f(gl.getUniformLocation(prog, "uVignette"), vignette ? 1 : 0);
 
-    /* Half resolution: the image is all soft gradients, so the saving is
-       free and it keeps phones cool. */
-    const SCALE = 0.5;
+    /* Reduced resolution: the image is all soft gradients, so the saving
+       is free and it keeps phones cool. The size is read from a
+       ResizeObserver rather than clientWidth on every frame, which forced
+       a layout read each frame. */
+    let cssW = canvas.clientWidth;
+    let cssH = canvas.clientHeight;
+    const sizer = new ResizeObserver(([entry]) => {
+      cssW = entry.contentRect.width;
+      cssH = entry.contentRect.height;
+    });
+    sizer.observe(canvas);
     function resize() {
       if (!canvas || !gl) return;
-      const w = Math.max(1, Math.floor(canvas.clientWidth * SCALE));
-      const h = Math.max(1, Math.floor(canvas.clientHeight * SCALE));
+      const w = Math.max(1, Math.floor(cssW * quality.scale));
+      const h = Math.max(1, Math.floor(cssH * quality.scale));
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -152,8 +178,15 @@ export function ShaderBackdrop({
 
     const running = () => visible && !document.hidden && !pausedRef.current;
 
+    const interval = 1000 / quality.fps;
+    let last = 0;
     function loop(now: number) {
-      draw(now);
+      /* Skip frames to hold the tier's rate; a small tolerance keeps a
+         60Hz display landing on every second frame for 30fps. */
+      if (now - last >= interval - 2) {
+        last = now;
+        draw(now);
+      }
       if (running()) raf = requestAnimationFrame(loop);
     }
 
@@ -165,9 +198,12 @@ export function ShaderBackdrop({
 
     if (reduce) {
       draw(performance.now());
-      const ro = new ResizeObserver(() => draw(performance.now()));
+      const ro = new ResizeObserver(() => requestAnimationFrame(() => draw(performance.now())));
       ro.observe(canvas);
-      return () => ro.disconnect();
+      return () => {
+        ro.disconnect();
+        sizer.disconnect();
+      };
     }
 
     const io = new IntersectionObserver(([entry]) => {
@@ -182,6 +218,7 @@ export function ShaderBackdrop({
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      sizer.disconnect();
       document.removeEventListener("visibilitychange", wake);
       window.removeEventListener("pointermove", onPointer);
     };
