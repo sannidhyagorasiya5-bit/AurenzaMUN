@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
-import { perfTier, prefersSaveData } from "@/lib/device";
+import { isTouchPrimary, perfTier, prefersSaveData } from "@/lib/device";
 
 /**
  * Voxel cube stack (exported from Unicorn Studio's Amphorae template) as a
@@ -21,6 +21,13 @@ import { perfTier, prefersSaveData } from "@/lib/device";
  *
  * Reduced motion bakes a single, nearly built frame. Data Saver skips the
  * download and leaves the plain dark background.
+ *
+ * Touch-first devices (phones, tablets) never load the clip. They get only
+ * the light it cast: a warm pool rising from the bottom, where the stack
+ * builds, and a faint highlight top right. It is two static gradients on
+ * one fixed layer, brightening as the page is read, the way the stack
+ * does, through opacity alone, which the compositor handles without a
+ * repaint.
  */
 const SRC = "/voxel-cube-stack.mp4";
 
@@ -32,6 +39,52 @@ const STRENGTH = 0.1;
 const SOFTNESS = 5;
 
 const FRAMES = { low: 24, mid: 36, high: 48 } as const;
+
+/** The same gold as the baked frames, at about their brightest. */
+const LIGHT = [
+  "radial-gradient(130% 65% at 50% 105%, rgba(229,192,99,0.085) 0%, rgba(229,192,99,0.03) 45%, transparent 75%)",
+  "radial-gradient(70% 45% at 95% 0%, rgba(229,192,99,0.05) 0%, transparent 70%)",
+].join(", ");
+
+/** Touch devices: the backdrop's light without the clip. */
+function useLightOnly(ref: React.RefObject<HTMLDivElement | null>, reduce: boolean | null) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !isTouchPrimary()) return;
+    if (reduce) {
+      el.style.opacity = "0.85";
+      return;
+    }
+
+    let maxScroll = 1;
+    const measure = () => {
+      maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      el.style.opacity = String(0.45 + 0.55 * p);
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    const ro = new ResizeObserver(() => {
+      measure();
+      kick();
+    });
+    ro.observe(document.body);
+    window.addEventListener("scroll", kick, { passive: true });
+    measure();
+    update();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener("scroll", kick);
+    };
+  }, [ref, reduce]);
+}
 
 /** Resolves once the seek lands, or after a timeout so one bad seek never stalls the bake. */
 function seek(v: HTMLVideoElement, t: number) {
@@ -87,12 +140,14 @@ function bakeOrder(n: number) {
 export function SiteBackdrop() {
   const ref = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const lightRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  useLightOnly(lightRef, reduce);
 
   useEffect(() => {
     const canvas = ref.current;
     const v = videoRef.current;
-    if (!canvas || !v || prefersSaveData()) return;
+    if (!canvas || !v || prefersSaveData() || isTouchPrimary()) return;
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
@@ -249,7 +304,14 @@ export function SiteBackdrop() {
         ref={ref}
         width={1}
         height={1}
-        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000"
+        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000 [@media(hover:none)_and_(pointer:coarse)]:hidden"
+      />
+      {/* Touch only (the same query as isTouchPrimary, so it is right from
+          the first paint): the light, in place of the canvas. */}
+      <div
+        ref={lightRef}
+        className="absolute inset-0 hidden opacity-45 [@media(hover:none)_and_(pointer:coarse)]:block"
+        style={{ backgroundImage: LIGHT, willChange: "opacity" }}
       />
       {/* Only a source to sample from; never shown. */}
       <video
