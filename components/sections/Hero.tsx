@@ -94,12 +94,13 @@ export function Hero() {
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
         <div
-          className="intro-rise flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3"
+          className="intro-rise flex flex-nowrap items-center gap-1.5 max-[359px]:flex-wrap sm:flex-wrap sm:gap-3"
           style={fade(0.2)}
         >
           <Pill
             variant="plate"
-            className="shrink-0 whitespace-nowrap max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
+            dot
+            className="shrink-0 whitespace-nowrap max-sm:gap-1! max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
           >
             {hero.badges[0]}
           </Pill>
@@ -114,7 +115,7 @@ export function Hero() {
             <LegacyPill
               accent="blue"
               dot
-              className="cursor-pointer whitespace-nowrap max-sm:gap-1.5! max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
+              className="cursor-pointer whitespace-nowrap max-sm:gap-1! max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
             >
               {hero.badges[1]}
             </LegacyPill>
