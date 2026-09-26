@@ -75,6 +75,7 @@
   --font-display: var(--font-space-grotesk);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-house: cubic-bezier(0.22, 1, 0.36, 1); /* lib/motion EASE */
 }
 
 /* ============================================================
@@ -162,6 +163,204 @@ section[id] {
   animation: pulse-dot 2.2s var(--ease-out-expo) infinite;
 }
 
+/* The touch backdrop's light brightens as the page is read. Driven by the
+   scroll position on the compositor where supported; SiteBackdrop falls
+   back to setting opacity from script elsewhere. */
+@keyframes backdrop-light {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .backdrop-light {
+    animation: backdrop-light linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* ============================================================
+   Entrances. Plain CSS transitions and keyframes on opacity and
+   translate, which the browser runs on the compositor; script only flips
+   `data-shown` (lib/inview.ts). Timings match lib/motion.
+   ============================================================ */
+
+/* <Reveal>: fade + rise, once. */
+.reveal {
+  opacity: 0;
+  translate: 0 var(--reveal-y, 24px);
+  transition:
+    opacity 0.6s var(--ease-house) var(--reveal-delay, 0s),
+    translate 0.6s var(--ease-house) var(--reveal-delay, 0s);
+}
+.reveal[data-shown] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* <AnimatedHeading>: each token slides up from behind its mask, staggered
+   by its index. `.rise` waits for scroll-in; `.rise-now` plays on load. */
+.rise .rise-token {
+  translate: 0 110%;
+  transition: translate 0.9s var(--ease-house)
+    calc(var(--rise-delay, 0s) + var(--i, 0) * var(--rise-stagger, 0.08s));
+}
+.rise[data-shown] .rise-token {
+  translate: 0 0;
+}
+@keyframes rise-in {
+  from {
+    translate: 0 110%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+.rise-now .rise-token {
+  animation: rise-in 0.9s var(--ease-house) both;
+  animation-delay: calc(var(--rise-delay, 0s) + var(--i, 0) * var(--rise-stagger, 0.045s));
+}
+
+/* Countdown digit roll: in from above, out below. */
+@keyframes digit-in {
+  from {
+    translate: 0 -100%;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+@keyframes digit-out {
+  from {
+    translate: 0 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0 100%;
+    opacity: 0;
+  }
+}
+.digit-in {
+  animation:
+    digit-in 0.4s var(--ease-house) both,
+    fade-in 0.55s var(--ease-house) both;
+}
+.digit-out {
+  animation: digit-out 0.4s var(--ease-house) both;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Hero intro: fade + rise on load. */
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+.intro-rise {
+  animation: intro-rise 0.9s var(--ease-house) both;
+  animation-delay: var(--intro-delay, 0s);
+}
+
+/* ============================================================
+   Scroll-driven motion. Each of these used to be computed in script on
+   every scroll frame; as scroll-driven animations they run on the
+   compositor, pinned to the scroll position at any refresh rate. Where
+   unsupported, the owning component falls back to script.
+   ============================================================ */
+
+/* Hero parallax: over the hero's exit (its top reaching the top of the
+   screen through its bottom doing so) the paint flow sinks, grows and
+   fades while the type lifts away. Same values as HeroParallaxFallback. */
+@keyframes hero-scene {
+  0% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    translate: 0 30%;
+    scale: 1.12;
+    opacity: 0;
+  }
+}
+@keyframes hero-type {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -35%;
+  }
+}
+
+/* Marquee: each layer slides the track by one group of four (25%), which
+   repeats seamlessly. The drift loops on its own; the push follows the
+   page's scroll position, three groups over the whole page. */
+@keyframes marquee-slide {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -25% 0;
+  }
+}
+.marquee-drift {
+  animation: marquee-slide var(--marquee-duration, 23s) linear infinite;
+  animation-direction: var(--marquee-direction, normal);
+}
+
+/* Reading progress along the header capsule. */
+@keyframes read-progress {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .hero-timeline {
+    view-timeline: --hero block;
+  }
+  .hero-scene {
+    animation: hero-scene linear both;
+    animation-timeline: --hero;
+    animation-range: exit 0% exit 100%;
+  }
+  .hero-type {
+    animation: hero-type linear both;
+    animation-timeline: --hero;
+    animation-range: exit 0% exit 100%;
+  }
+  .read-progress {
+    animation: read-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+  .marquee-scroll {
+    animation: marquee-slide linear 3 both;
+    animation-timeline: scroll(root block);
+  }
+}
+
 /* ============================================================
    Reduced motion
    ============================================================ */
@@ -172,5 +371,28 @@ section[id] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .backdrop-light,
+  .marquee-drift,
+  .marquee-scroll,
+  .hero-scene,
+  .hero-type,
+  .read-progress {
+    animation: none !important;
+  }
+  .read-progress {
+    scale: 0 1;
+  }
+  .digit-out {
+    display: none;
+  }
+  .reveal,
+  .rise .rise-token,
+  .rise-now .rise-token,
+  .intro-rise {
+    opacity: 1;
+    translate: none;
+    transition: none !important;
+    animation: none !important;
   }
 }

@@ -182,12 +182,10 @@ function RegistrationMobile() {
 }
 
 export function Registration() {
-  const reduce = useReducedMotion();
-  const listRef = useRef<HTMLOListElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: listRef,
-    offset: ["start 70%", "end 60%"],
-  });
+  /* The two layouts are swapped by mounting, not only by CSS: the wide one
+     tracks five elements against the scroll position every frame, which a
+     phone should not pay for while that layout sits hidden. */
+  const wide = useWide();
 
   return (
     <section
@@ -196,8 +194,21 @@ export function Registration() {
       className="relative px-5 py-28 sm:px-8 sm:py-40"
     >
       <RegistrationMobile />
+      {wide ? <RegistrationWide /> : null}
+    </section>
+  );
+}
 
-      {/* From sm up: the redesigned layout. */}
+/** From sm up: the redesigned layout. */
+function RegistrationWide() {
+  const reduce = useReducedMotion();
+  const listRef = useRef<HTMLOListElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ["start 70%", "end 60%"],
+  });
+
+  return (
       <div className="mx-auto hidden max-w-7xl sm:block">
         <SectionIntro
           id="register-heading"
@@ -286,6 +297,5 @@ export function Registration() {
           </div>
         </div>
       </div>
-    </section>
   );
 }

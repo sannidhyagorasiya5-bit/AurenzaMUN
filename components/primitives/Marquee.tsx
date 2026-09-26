@@ -1,29 +1,23 @@
-"use client";
-
-import { Fragment, useRef } from "react";
-import {
-  motion,
-  useAnimationFrame,
-  useInView,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "motion/react";
+import type { CSSProperties } from "react";
+import { Fragment } from "react";
 import { StarFourIcon } from "@phosphor-icons/react/dist/ssr";
 
-const wrap = (min: number, max: number, v: number) => {
-  const r = max - min;
-  return ((((v - min) % r) + r) % r) + min;
-};
+/** Copies of the item group on the track: two for the drift to wrap, plus
+    room for the scroll push and the widest screens. */
+const COPIES = 4;
 
 /**
- * Kinetic ticker bound to scroll velocity: it idles along on its own, speeds
- * up as the page is scrolled and reverses when the reader scrolls back up.
- * Driven entirely by motion values, so it never re-renders React. Static
- * under reduced motion. Decorative, so aria-hidden.
+ * Kinetic ticker: it idles along on its own, is pushed further as the page
+ * is scrolled down and runs back as the reader scrolls up.
+ *
+ * Pure CSS, no script at all. Two nested layers each slide the track by
+ * exactly one group, which repeats seamlessly: the inner one on a looping
+ * animation (`marquee-drift`), the outer one on the page's scroll position
+ * (`marquee-scroll`, a scroll-driven animation). Both run on the
+ * compositor, so the ticker keeps full speed and never stutters however
+ * busy the page is or whatever the display's refresh rate. Where
+ * scroll-driven animations are unsupported it simply drifts. Static under
+ * reduced motion. Decorative, so aria-hidden.
  */
 export function Marquee({
   items,
@@ -31,34 +25,18 @@ export function Marquee({
   className = "",
 }: {
   items: string[];
-  /** Percent of one track per second; negative runs leftward. */
+  /** Percent of two groups per second; negative runs leftward. */
   baseVelocity?: number;
   className?: string;
 }) {
-  const reduce = useReducedMotion();
-  const baseX = useMotionValue(0);
-  const { scrollY } = useScroll();
-  const velocity = useVelocity(scrollY);
-  const smooth = useSpring(velocity, { damping: 50, stiffness: 400 });
-  const factor = useTransform(smooth, [0, 1000], [0, 4], { clamp: false });
-  const x = useTransform(baseX, (v) => `${wrap(-50, 0, v)}%`);
-  const dir = useRef(1);
-  const ref = useRef<HTMLDivElement>(null);
-  /* Off screen it neither moves nor costs a style write per frame. */
-  const inView = useInView(ref, { margin: "100px 0px" });
+  /* One group every 100 / (2 * |v|) seconds, as before. */
+  const style = {
+    "--marquee-duration": `${100 / (2 * Math.max(0.1, Math.abs(baseVelocity)))}s`,
+    "--marquee-direction": baseVelocity < 0 ? "normal" : "reverse",
+  } as CSSProperties;
 
-  useAnimationFrame((_, delta) => {
-    if (reduce || !inView) return;
-    let move = dir.current * baseVelocity * (delta / 1000);
-    const f = factor.get();
-    if (f < 0) dir.current = -1;
-    else if (f > 0) dir.current = 1;
-    move += dir.current * move * f;
-    baseX.set(baseX.get() + move);
-  });
-
-  const group = (
-    <div className="flex shrink-0 items-center">
+  const group = (copy: number) => (
+    <div key={copy} className="flex shrink-0 items-center">
       {items.map((item, i) => (
         <Fragment key={i}>
           <span
@@ -75,11 +53,12 @@ export function Marquee({
   );
 
   return (
-    <div ref={ref} aria-hidden className={`flex w-full overflow-hidden ${className}`}>
-      <motion.div className="flex w-max shrink-0" style={{ x }}>
-        {group}
-        {group}
-      </motion.div>
+    <div aria-hidden className={`flex w-full overflow-hidden ${className}`}>
+      <div className="marquee-scroll flex w-max shrink-0 will-change-transform">
+        <div className="marquee-drift flex w-max shrink-0 will-change-transform" style={style}>
+          {Array.from({ length: COPIES }, (_, i) => group(i))}
+        </div>
+      </div>
     </div>
   );
 }

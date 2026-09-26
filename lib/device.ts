@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from "react";
+
 /**
  * A one-off read of what the device can afford, for the few effects that
  * scale their own cost (the shader, the voxel backdrop). Client only: call
@@ -34,4 +36,22 @@ export function perfTier(): PerfTier {
   else cached = "high";
 
   return cached;
+}
+
+const noSubscribe = () => () => {};
+
+/**
+ * True where CSS scroll-driven animations run (Chrome/Edge/Samsung
+ * Internet 115+, Safari 26+). Those animations are driven by the scroll
+ * position on the compositor thread, so they stay in step with the finger
+ * at any refresh rate, however busy the page's main thread is. The server
+ * snapshot assumes support: the CSS side is gated by @supports anyway, and
+ * the script fallback mounts after hydration where support is missing.
+ */
+export function useScrollTimelines() {
+  return useSyncExternalStore(
+    noSubscribe,
+    () => CSS.supports("animation-timeline: view()"),
+    () => true,
+  );
 }

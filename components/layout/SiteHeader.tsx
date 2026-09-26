@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-} from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { hero, nav } from "@/lib/content";
+import { useScrollTimelines } from "@/lib/device";
 import { EASE } from "@/lib/motion";
 import { lockScroll, unlockScroll } from "@/lib/scroll";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
@@ -46,22 +40,66 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const active = useActiveSection(NAV_IDS);
 
-  const { scrollY, scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
+  const cssScroll = useScrollTimelines();
+  const progressRef = useRef<HTMLDivElement>(null);
 
-  /* Tucks away while reading downward, returns the moment the reader
-     scrolls up. State only flips on a direction change, not every frame. */
-  useMotionValueEvent(scrollY, "change", (v) => {
-    const prev = scrollY.getPrevious() ?? 0;
-    setScrolled(v > 24);
-    setHidden(v > 480 && v > prev + 2);
-    if (v < prev - 2) setHidden(false);
-  });
+  /* Tucks away after a deliberate stretch of reading downward, returns
+     after a deliberate stretch back up. Travel is summed per direction, so
+     the slow tail of a flick (a pixel or two a frame) can no longer flip it
+     back and forth, and state is only set when it actually changes: setting
+     it every frame re-rendered the header, and with it Motion re-measured
+     the nav's layout on every scroll frame.
 
+     A plain passive listener reading window.scrollY, which never forces a
+     layout, rather than Motion's useScroll, which measured the page's
+     scroll height on every frame. */
+  const scrolledRef = useRef(false);
+  const hiddenRef = useRef(false);
   useEffect(() => {
-    const id = requestAnimationFrame(() => setScrolled(window.scrollY > 24));
-    return () => cancelAnimationFrame(id);
-  }, []);
+    let prev = window.scrollY;
+    let travel = 0;
+    let maxScroll = 1;
+    const measure = () => {
+      maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+    /* Only without scroll-driven animations: the progress bar in script. */
+    const ro = cssScroll ? null : new ResizeObserver(measure);
+    ro?.observe(document.body);
+    measure();
+
+    function onScroll() {
+      const v = window.scrollY;
+      const delta = v - prev;
+      prev = v;
+
+      const isScrolled = v > 24;
+      if (isScrolled !== scrolledRef.current) {
+        scrolledRef.current = isScrolled;
+        setScrolled(isScrolled);
+      }
+
+      if (!cssScroll && progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${Math.min(1, v / maxScroll)})`;
+      }
+
+      if (delta === 0) return;
+      travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
+      let next = hiddenRef.current;
+      if (v <= 480) next = false;
+      else if (travel > 48) next = true;
+      else if (travel < -24) next = false;
+      if (next !== hiddenRef.current) {
+        hiddenRef.current = next;
+        setHidden(next);
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      ro?.disconnect();
+    };
+  }, [cssScroll]);
 
   useEffect(() => {
     if (!open) return;
@@ -166,11 +204,11 @@ export function SiteHeader() {
           </div>
 
           {/* Reading position along the capsule's bottom edge. */}
-          <motion.div
+          <div
+            ref={progressRef}
             aria-hidden
-            style={{ scaleX: reduce ? 0 : progress }}
-            className={`absolute inset-x-6 -bottom-px h-px origin-left bg-brand transition-opacity duration-500 ${
-              scrolled ? "opacity-100" : "opacity-0"
+            className={`read-progress absolute inset-x-6 -bottom-px h-px origin-left bg-brand transition-opacity duration-500 will-change-transform ${
+              scrolled && !reduce ? "opacity-100" : "opacity-0"
             }`}
           />
         </div>

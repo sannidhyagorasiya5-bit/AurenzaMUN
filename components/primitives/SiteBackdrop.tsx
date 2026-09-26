@@ -55,6 +55,9 @@ function useLightOnly(ref: React.RefObject<HTMLDivElement | null>, reduce: boole
       el.style.opacity = "0.85";
       return;
     }
+    /* Where scroll-driven animations exist, globals.css runs the brightening
+       on the compositor and no script runs per frame at all. */
+    if (CSS.supports("animation-timeline: scroll()")) return;
 
     let maxScroll = 1;
     const measure = () => {
@@ -310,7 +313,7 @@ export function SiteBackdrop() {
           the first paint): the light, in place of the canvas. */}
       <div
         ref={lightRef}
-        className="absolute inset-0 hidden opacity-45 [@media(hover:none)_and_(pointer:coarse)]:block"
+        className="backdrop-light absolute inset-0 hidden opacity-45 [@media(hover:none)_and_(pointer:coarse)]:block"
         style={{ backgroundImage: LIGHT, willChange: "opacity" }}
       />
       {/* Only a source to sample from; never shown. */}

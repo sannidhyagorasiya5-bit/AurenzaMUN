@@ -1,14 +1,17 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "motion/react";
-import { DURATION, EASE, VIEWPORT } from "@/lib/motion";
+import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useRef } from "react";
+import { VIEWPORT } from "@/lib/motion";
+import { observeOnce } from "@/lib/inview";
 
 type RevealTag = "div" | "section" | "li" | "span" | "article";
 
 /**
- * Scroll-reveal workhorse: fades + rises into view once.
- * Honors prefers-reduced-motion by rendering the final state immediately.
+ * Scroll-reveal workhorse: fades + rises into view once. The movement is a
+ * CSS transition (`.reveal` in globals.css) triggered by a shared observer,
+ * so it runs on the compositor rather than in script every frame.
+ * Reduced motion shows the final state immediately, in CSS.
  */
 export function Reveal({
   children,
@@ -25,23 +28,21 @@ export function Reveal({
   amount?: number;
   className?: string;
 }) {
-  const reduce = useReducedMotion();
-  const MotionTag = motion[as];
+  const ref = useRef<HTMLElement>(null);
+  const Tag = as;
 
-  if (reduce) {
-    const Tag = as;
-    return <Tag className={className}>{children}</Tag>;
-  }
+  useEffect(() => {
+    const el = ref.current;
+    return el ? observeOnce(el, amount) : undefined;
+  }, [amount]);
 
   return (
-    <MotionTag
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: VIEWPORT.once, amount }}
-      transition={{ duration: DURATION.base, ease: EASE, delay }}
+    <Tag
+      ref={ref as never}
+      className={`reveal ${className}`}
+      style={{ "--reveal-y": `${y}px`, "--reveal-delay": `${delay}s` } as CSSProperties}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }

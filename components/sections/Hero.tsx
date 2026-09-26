@@ -1,69 +1,90 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { useEffect, useRef, type CSSProperties, type RefObject } from "react";
+import { useReducedMotion, useScroll } from "motion/react";
 import { hero } from "@/lib/content";
-import { EASE, progressBetween } from "@/lib/motion";
+import { useScrollTimelines } from "@/lib/device";
+import { progressBetween } from "@/lib/motion";
 import { AnimatedHeading } from "@/components/primitives/AnimatedHeading";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { Pill } from "@/components/primitives/Pill";
 import { LegacyPill } from "@/components/primitives/legacy/LegacyPill";
 import { ShaderBackdrop } from "@/components/primitives/ShaderBackdrop";
 
+const sceneFade = progressBetween(0.2, 0.95);
+
+/**
+ * Script fallback for the parallax, mounted only where CSS scroll-driven
+ * animations are missing (Safari before 26, older Android WebViews). It
+ * writes the same values as the `hero-scene` / `hero-type` keyframes in
+ * globals.css straight to the two layers, without re-rendering React.
+ */
+function HeroParallaxFallback({
+  target,
+  scene,
+  type,
+}: {
+  target: RefObject<HTMLElement | null>;
+  scene: RefObject<HTMLDivElement | null>;
+  type: RefObject<HTMLDivElement | null>;
+}) {
+  const { scrollYProgress } = useScroll({
+    target,
+    offset: ["start start", "end start"],
+  });
+  useEffect(
+    () =>
+      scrollYProgress.on("change", (v) => {
+        const sceneEl = scene.current;
+        const typeEl = type.current;
+        if (sceneEl) {
+          sceneEl.style.transform = `translate3d(0, ${v * 30}%, 0) scale(${1 + 0.12 * v})`;
+          sceneEl.style.opacity = String(1 - sceneFade(v));
+        }
+        if (typeEl) typeEl.style.transform = `translate3d(0, ${v * -35}%, 0)`;
+      }),
+    [scrollYProgress, scene, type],
+  );
+  return null;
+}
+
 export function Hero() {
   const reduce = useReducedMotion();
+  const cssScroll = useScrollTimelines();
   const ref = useRef<HTMLElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const typeRef = useRef<HTMLDivElement>(null);
 
   /* As the hero scrolls away the paint flow sinks and fades out, handing
      over to the site-wide voxel backdrop, while the type lifts faster than
-     the page: a two-plane parallax rather than a plain slide. */
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const sceneY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
-  /* A function transform, not a range: see progressBetween. */
-  const sceneOpacity = useTransform(
-    scrollYProgress,
-    (v) => 1 - progressBetween(0.2, 0.95)(v),
-  );
-  const typeY = useTransform(scrollYProgress, [0, 1], ["0%", "-35%"]);
+     the page: a two-plane parallax rather than a plain slide. It runs as
+     CSS scroll-driven animations (`hero-scene`, `hero-type` in
+     globals.css), on the compositor, so it tracks the finger exactly at
+     any refresh rate; the script fallback covers browsers without them. */
 
-  const fade = (delay: number) =>
-    reduce
-      ? {}
-      : {
-          initial: { opacity: 0, y: 24 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.9, ease: EASE, delay },
-        };
+  /* Fade + rise on load, in CSS (`.intro-rise`), so it plays from first
+     paint on the compositor. */
+  const fade = (delay: number) => ({ "--intro-delay": `${delay}s` }) as CSSProperties;
 
   return (
     <section
       ref={ref}
       id="top"
       aria-label="AurenzaMUN introduction"
-      className="relative isolate flex flex-col overflow-hidden px-5 pb-12 pt-24 sm:px-8 sm:pb-14 sm:pt-28 hero-wide:min-h-[100dvh]"
+      className="hero-timeline relative isolate flex flex-col overflow-hidden px-5 pb-12 pt-24 sm:px-8 sm:pb-14 sm:pt-28 hero-wide:min-h-[100dvh]"
     >
       {/* The paint flow. Its lower edge is masked away so it dissolves into
           the voxel backdrop instead of ending on a hard line. */}
-      <motion.div
+      {!reduce && !cssScroll ? (
+        <HeroParallaxFallback target={ref} scene={sceneRef} type={typeRef} />
+      ) : null}
+      <div
+        ref={sceneRef}
         aria-hidden
-        style={
-          reduce
-            ? undefined
-            : { y: sceneY, scale: sceneScale, opacity: sceneOpacity }
-        }
-        className="absolute inset-0 -z-20 [mask-image:linear-gradient(to_bottom,black_60%,transparent)]"
+        className="hero-scene absolute inset-0 -z-20 will-change-transform [mask-image:linear-gradient(to_bottom,black_60%,transparent)]"
       >
         <ShaderBackdrop />
-      </motion.div>
+      </div>
       {/* Legibility: the lede sits bottom-left, so the scene is weighted a
           little darker there. */}
       <div
@@ -72,9 +93,9 @@ export function Hero() {
       />
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
-        <motion.div
-          className="flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3"
-          {...fade(0.2)}
+        <div
+          className="intro-rise flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3"
+          style={fade(0.2)}
         >
           <Pill
             variant="plate"
@@ -98,11 +119,11 @@ export function Hero() {
               {hero.badges[1]}
             </LegacyPill>
           </a>
-        </motion.div>
+        </div>
 
-        <motion.div
-          style={reduce ? undefined : { y: typeY }}
-          className="mt-12 sm:mt-16 hero-wide:mt-auto hero-wide:pt-16"
+        <div
+          ref={typeRef}
+          className="hero-type mt-12 will-change-transform sm:mt-16 hero-wide:mt-auto hero-wide:pt-16"
         >
           <AnimatedHeading
             as="h1"
@@ -117,15 +138,15 @@ export function Hero() {
 
           <div className="mt-8 grid gap-8 sm:mt-6 lg:-mt-[clamp(4rem,9vw,9rem)] lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <motion.p
-                className="max-w-[36ch] text-lg leading-relaxed text-foreground/85 sm:text-xl"
-                {...fade(0.9)}
+              <p
+                className="intro-rise max-w-[36ch] text-lg leading-relaxed text-foreground/85 sm:text-xl"
+                style={fade(0.9)}
               >
                 {hero.lede}
-              </motion.p>
-              <motion.div
-                className="mt-8 flex flex-col gap-3 sm:flex-row"
-                {...fade(1.05)}
+              </p>
+              <div
+                className="intro-rise mt-8 flex flex-col gap-3 sm:flex-row"
+                style={fade(1.05)}
               >
                 <MagneticButton href="#register" variant="primary" arrow>
                   {hero.ctaPrimary}
@@ -133,10 +154,10 @@ export function Hero() {
                 <MagneticButton href="#committees" variant="secondary">
                   {hero.ctaSecondary}
                 </MagneticButton>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
