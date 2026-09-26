@@ -75,6 +75,7 @@ export function MagneticButton({
   className = "",
   ariaLabel,
   arrow = false,
+  hint = true,
 }: {
   children: ReactNode;
   href?: string;
@@ -85,6 +86,8 @@ export function MagneticButton({
   ariaLabel?: string;
   /** Trailing arrow that nudges up-right on hover. */
   arrow?: boolean;
+  /** The tiny "press & hold" note above the button, on touch screens. */
+  hint?: boolean;
 }) {
   const reduce = useReducedMotion();
   const coarse = useCoarsePointer();
@@ -183,15 +186,27 @@ export function MagneticButton({
     if (held) activate();
   }
 
-  const base = `group/btn relative isolate inline-flex select-none [-webkit-touch-callout:none] items-center justify-center overflow-hidden whitespace-nowrap rounded-full px-7 py-3.5 text-[0.8rem] uppercase tracking-[0.14em] transition-colors duration-300 focus-visible:outline-2 ${v.base} ${className}`;
+  const base = `group/btn relative isolate inline-flex select-none [-webkit-touch-callout:none] items-center justify-center whitespace-nowrap rounded-full px-7 py-3.5 text-[0.8rem] uppercase tracking-[0.14em] transition-colors duration-300 focus-visible:outline-2 ${v.base} ${className}`;
 
   const label = (
     <>
       {v.fill ? (
+        /* Clipped in its own box rather than by the button, which has to
+           let the hint sit outside it. */
+        <span aria-hidden className="absolute inset-0 -z-10 overflow-hidden rounded-full">
+          <span
+            className={`absolute inset-0 origin-bottom scale-y-0 transition-transform duration-500 ease-out-expo group-hover/btn:scale-y-100 group-active/btn:scale-y-100 ${v.fill}`}
+          />
+        </span>
+      ) : null}
+      {hint && !disabled ? (
+        /* Touch only: a mouse gets the fill on hover and never needs telling. */
         <span
           aria-hidden
-          className={`absolute inset-0 -z-10 origin-bottom scale-y-0 rounded-full transition-transform duration-500 ease-out-expo group-hover/btn:scale-y-100 group-active/btn:scale-y-100 ${v.fill}`}
-        />
+          className="pointer-events-none absolute bottom-full left-1/2 mb-[3px] hidden -translate-x-1/2 font-mono text-[0.5rem] normal-case leading-none tracking-[0.12em] text-muted/80 [@media(hover:none)]:block"
+        >
+          press &amp; hold
+        </span>
       ) : null}
       <span
         className={`relative inline-flex items-center gap-2 transition-colors duration-300 ${v.onFill}`}

@@ -139,7 +139,7 @@ export function SiteHeader() {
             {/* Hidden through a wrapper: the button's own inline-flex would
                 otherwise out-rank a `hidden` passed in as a class. */}
             <div className="hidden sm:block">
-              <MagneticButton href="#register" variant="primary" className="!px-5 !py-2.5">
+              <MagneticButton href="#register" variant="primary" hint={false} className="!px-5 !py-2.5">
                 {hero.ctaPrimary}
               </MagneticButton>
             </div>
