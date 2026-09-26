@@ -203,7 +203,7 @@ export function MagneticButton({
         /* Touch only: a mouse gets the fill on hover and never needs telling. */
         <span
           aria-hidden
-          className="pointer-events-none absolute bottom-full left-1/2 mb-[3px] hidden -translate-x-1/2 font-mono text-[0.5rem] normal-case leading-none tracking-[0.12em] text-muted/80 [@media(hover:none)]:block"
+          className="pointer-events-none absolute bottom-full left-4 mb-[3px] hidden font-mono text-[0.5rem] normal-case leading-none tracking-[0.12em] text-muted/80 [@media(hover:none)]:block"
         >
           press &amp; hold
         </span>

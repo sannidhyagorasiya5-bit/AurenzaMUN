@@ -1,33 +1,34 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
-import { isTouchPrimary, perfTier, prefersSaveData } from "@/lib/device";
+import { isTouchPrimary, perfTier, prefersSaveData, useScrollTimelines } from "@/lib/device";
 
 /**
  * Voxel cube stack (exported from Unicorn Studio's Amphorae template) as a
  * faint gold ghost behind the whole site. Page position maps onto the clip,
  * so the stack builds as you read down and is complete at the footer.
  *
- * It used to be a live <video> under a blur, a colour filter and a blend
- * mode, seeking or playing on every scroll frame. That full-screen filter
- * chain and the ~70ms seeks (the file's keyframes are sparse) were the
- * single biggest cost on phones. Now, once the page has loaded and gone
- * idle, the clip is sampled once into a few dozen small frames with the
- * tint and the 10% screen already baked into their pixels, and the video is
- * released. Scrolling then only crossfades two neighbouring frames onto one
- * small opaque canvas, which the browser upscales; the upscale is what
- * gives the old blur's softness, for free.
+ * Nothing about it runs per frame on the main thread:
  *
- * Reduced motion bakes a single, nearly built frame. Data Saver skips the
- * download and leaves the plain dark background.
+ *   1. Once the page has loaded and gone idle, the clip is sampled into a
+ *      single vertical strip of small frames (a sprite), with the gold tint
+ *      and the old 10% screen baked into the pixels. The video is then
+ *      released. The browser upscales the small frames, which is what
+ *      gives the soft, blurred look.
+ *   2. Two copies of the strip sit in a window the size of one frame. A
+ *      CSS scroll-driven animation (`backdrop-a` / `backdrop-b` in
+ *      globals.css) steps copy A to the frame at the scroll position and
+ *      copy B to the next one, and fades B in across the gap: a crossfade
+ *      from frame to frame, run by the compositor, at the display's refresh
+ *      rate, however busy the page is. Browsers without scroll-driven
+ *      animations get the same values written from a passive scroll
+ *      listener.
  *
- * Touch-first devices (phones, tablets) never load the clip. They get only
- * the light it cast: a warm pool rising from the bottom, where the stack
- * builds, and a faint highlight top right. It is two static gradients on
- * one fixed layer, brightening as the page is read, the way the stack
- * does, through opacity alone, which the compositor handles without a
- * repaint.
+ * Touch devices keep the plain light layer underneath until the strip is
+ * ready, then the cubes fade in over it. Reduced motion bakes one nearly
+ * built frame. Data Saver skips the download and keeps only the light.
  */
 const SRC = "/voxel-cube-stack.mp4";
 
@@ -37,8 +38,12 @@ const GOLD = [229, 192, 99] as const; // --brand
 const STRENGTH = 0.1;
 /** CSS px per baked px: the softness the old 8px blur gave. */
 const SOFTNESS = 5;
+/** Rows repeated above and below each frame, so upscaling never samples its neighbour. */
+const PAD = 2;
+/** Tallest strip that every GPU and iOS canvas limit accepts. */
+const MAX_STRIP = 4096;
 
-const FRAMES = { low: 24, mid: 36, high: 48 } as const;
+const FRAMES = { low: 20, mid: 28, high: 36 } as const;
 
 /** The same gold as the baked frames, at about their brightest. */
 const LIGHT = [
@@ -46,48 +51,7 @@ const LIGHT = [
   "radial-gradient(70% 45% at 95% 0%, rgba(229,192,99,0.05) 0%, transparent 70%)",
 ].join(", ");
 
-/** Touch devices: the backdrop's light without the clip. */
-function useLightOnly(ref: React.RefObject<HTMLDivElement | null>, reduce: boolean | null) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !isTouchPrimary()) return;
-    if (reduce) {
-      el.style.opacity = "0.85";
-      return;
-    }
-    /* Where scroll-driven animations exist, globals.css runs the brightening
-       on the compositor and no script runs per frame at all. */
-    if (CSS.supports("animation-timeline: scroll()")) return;
-
-    let maxScroll = 1;
-    const measure = () => {
-      maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    };
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-      el.style.opacity = String(0.45 + 0.55 * p);
-    };
-    const kick = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    const ro = new ResizeObserver(() => {
-      measure();
-      kick();
-    });
-    ro.observe(document.body);
-    window.addEventListener("scroll", kick, { passive: true });
-    measure();
-    update();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener("scroll", kick);
-    };
-  }, [ref, reduce]);
-}
+type Strip = { frames: number; w: number; h: number; aspect: number };
 
 /** Resolves once the seek lands, or after a timeout so one bad seek never stalls the bake. */
 function seek(v: HTMLVideoElement, t: number) {
@@ -124,93 +88,69 @@ function whenReady(v: HTMLVideoElement) {
   });
 }
 
-/** Coarse-to-fine order (every 8th frame, then every 4th, ...), so the whole scroll range is covered early. */
-function bakeOrder(n: number) {
-  const order: number[] = [];
-  const seen = new Set<number>();
-  for (let stride = 8; stride >= 1; stride /= 2) {
-    for (let i = 0; i < n; i += stride) {
-      if (!seen.has(i)) {
-        seen.add(i);
-        order.push(i);
-      }
-    }
-  }
-  if (!seen.has(n - 1)) order.splice(1, 0, n - 1);
-  return order;
+/** Waits until the reader has not scrolled for a moment, so baking never competes with a flick. */
+function whenStill(last: { t: number }) {
+  return new Promise<void>((resolve) => {
+    const check = () => (performance.now() - last.t > 180 ? resolve() : setTimeout(check, 120));
+    check();
+  });
 }
 
 export function SiteBackdrop() {
-  const ref = useRef<HTMLCanvasElement>(null);
+  const stripA = useRef<HTMLCanvasElement>(null);
+  const stripB = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const lightRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  useLightOnly(lightRef, reduce);
+  const cssScroll = useScrollTimelines();
+  const [strip, setStrip] = useState<Strip | null>(null);
 
+  /* -- light layer, touch only -------------------------------------------- */
   useEffect(() => {
-    const canvas = ref.current;
-    const v = videoRef.current;
-    if (!canvas || !v || prefersSaveData() || isTouchPrimary()) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let cancelled = false;
-    let raf = 0;
-    const frames: (HTMLCanvasElement | null)[] = [];
-    const count = reduce ? 1 : FRAMES[perfTier()];
-
-    /* -- scroll -> frame ------------------------------------------------ */
+    const el = lightRef.current;
+    if (!el || !isTouchPrimary()) return;
+    if (reduce) {
+      el.style.opacity = "0.85";
+      return;
+    }
+    /* Where scroll-driven animations exist, globals.css brightens it on the
+       compositor; otherwise it is set from a passive listener. */
+    if (cssScroll) return;
     let maxScroll = 1;
     const measure = () => {
       maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     };
-    const target = () => Math.min(1, Math.max(0, window.scrollY / maxScroll));
-
-    let shown = -1;
-    let drawn = -1;
-
-    function draw(p: number) {
-      if (!ctx || !canvas) return;
-      const f = p * (count - 1);
-      let lo = -1;
-      let hi = -1;
-      for (let i = Math.floor(f); i >= 0; i--) if (frames[i]) { lo = i; break; }
-      for (let i = Math.ceil(f); i < count; i++) if (frames[i]) { hi = i; break; }
-      if (lo < 0) lo = hi;
-      if (hi < 0) hi = lo;
-      if (lo < 0) return;
-
-      ctx.globalAlpha = 1;
-      ctx.drawImage(frames[lo]!, 0, 0);
-      if (hi !== lo) {
-        ctx.globalAlpha = (f - lo) / (hi - lo);
-        ctx.drawImage(frames[hi]!, 0, 0);
-      }
-      drawn = p;
-    }
-
-    /* Eases the shown position toward the scroll position, then sleeps
-       until the page moves again: nothing runs while the reader is still. */
-    function step() {
-      raf = 0;
-      const t = reduce ? 0 : target();
-      shown = shown < 0 ? t : shown + (t - shown) * 0.14;
-      if (Math.abs(t - shown) < 0.0004) shown = t;
-      if (Math.abs(shown - drawn) > 0.0002) draw(shown);
-      if (shown !== t) raf = requestAnimationFrame(step);
-    }
-    const kick = () => {
-      if (!raf) raf = requestAnimationFrame(step);
+    const update = () => {
+      el.style.opacity = String(0.45 + 0.55 * Math.min(1, Math.max(0, window.scrollY / maxScroll)));
     };
-
     const ro = new ResizeObserver(() => {
       measure();
-      kick();
+      update();
     });
+    ro.observe(document.body);
+    window.addEventListener("scroll", update, { passive: true });
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("scroll", update);
+    };
+  }, [reduce, cssScroll]);
 
-    /* -- bake -------------------------------------------------------------- */
+  /* -- bake the strip ------------------------------------------------------ */
+  useEffect(() => {
+    const v = videoRef.current;
+    const a = stripA.current;
+    const b = stripB.current;
+    if (!v || !a || !b || prefersSaveData()) return;
+
+    let cancelled = false;
+    const lastScroll = { t: 0 };
+    const onScroll = () => {
+      lastScroll.t = performance.now();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     async function bake() {
-      if (!v || !(await whenReady(v)) || cancelled || !v.duration) return;
+      if (!v || !a || !b || !(await whenReady(v)) || cancelled || !v.duration) return;
       v.pause();
 
       const aspect = v.videoWidth / v.videoHeight || 16 / 9;
@@ -219,63 +159,66 @@ export function SiteBackdrop() {
       const shownWidth = Math.max(window.innerWidth, window.innerHeight * aspect);
       const w = Math.round(Math.min(400, Math.max(64, shownWidth / SOFTNESS)));
       const h = Math.max(1, Math.round(w / aspect));
-      canvas!.width = w;
-      canvas!.height = h;
-      ctx!.fillStyle = `rgb(${BG.join(",")})`;
-      ctx!.fillRect(0, 0, w, h);
+      const cell = h + PAD * 2;
+      const count = reduce
+        ? 1
+        : Math.max(2, Math.min(FRAMES[perfTier()], Math.floor(MAX_STRIP / cell)));
+
+      a.width = b.width = w;
+      a.height = b.height = cell * count;
+      const actx = a.getContext("2d", { alpha: false });
+      if (!actx) return;
 
       /* Two-step downscale, so fine voxel edges average rather than alias. */
       const mid = document.createElement("canvas");
       mid.width = w * 2;
       mid.height = h * 2;
-      const mctx = mid.getContext("2d", { willReadFrequently: false })!;
+      const mctx = mid.getContext("2d")!;
       mctx.imageSmoothingQuality = "high";
+      const frame = document.createElement("canvas");
+      frame.width = w;
+      frame.height = h;
+      const fctx = frame.getContext("2d", { willReadFrequently: true })!;
+      fctx.imageSmoothingQuality = "high";
 
       const span = Math.max(0, v.duration - 0.05);
-      const order = reduce ? [0] : bakeOrder(count);
-
-      for (const i of order) {
+      for (let i = 0; i < count; i++) {
+        await whenStill(lastScroll);
         if (cancelled) return;
         await seek(v, reduce ? v.duration * 0.8 : (i / Math.max(1, count - 1)) * span);
         if (cancelled) return;
 
         mctx.drawImage(v, 0, 0, mid.width, mid.height);
-        const out = document.createElement("canvas");
-        out.width = w;
-        out.height = h;
-        const octx = out.getContext("2d", { willReadFrequently: true })!;
-        octx.imageSmoothingQuality = "high";
-        octx.drawImage(mid, 0, 0, w, h);
+        fctx.drawImage(mid, 0, 0, w, h);
 
         /* grayscale -> gold -> screened at 10% over the page background */
-        const img = octx.getImageData(0, 0, w, h);
+        const img = fctx.getImageData(0, 0, w, h);
         const d = img.data;
         for (let p = 0; p < d.length; p += 4) {
           const l = Math.min(1, ((0.2126 * d[p] + 0.7152 * d[p + 1] + 0.0722 * d[p + 2]) / 255) * 1.1) * 0.85;
           for (let c = 0; c < 3; c++) {
-            const tint = (GOLD[c] / 255) * l;
             const bg = BG[c] / 255;
-            d[p + c] = Math.round((bg + STRENGTH * tint * (1 - bg)) * 255);
+            d[p + c] = Math.round((bg + STRENGTH * (GOLD[c] / 255) * l * (1 - bg)) * 255);
           }
         }
-        octx.putImageData(img, 0, 0);
-        frames[i] = out;
+        fctx.putImageData(img, 0, 0);
 
-        drawn = -1;
-        kick();
-        if (!canvas!.style.opacity) canvas!.style.opacity = "1";
-        /* Let scrolling and input breathe between samples. */
+        /* The frame, with its edge rows repeated into the padding. */
+        const y = i * cell + PAD;
+        actx.drawImage(frame, 0, y);
+        actx.drawImage(frame, 0, 0, w, 1, 0, y - PAD, w, PAD);
+        actx.drawImage(frame, 0, h - 1, w, 1, 0, y + h, w, PAD);
+
         await new Promise((r) => setTimeout(r, 16));
       }
+      if (cancelled) return;
 
+      b.getContext("2d", { alpha: false })?.drawImage(a, 0, 0);
       /* Every frame is in hand: free the decoder and the download. */
       v.removeAttribute("src");
       v.load();
+      setStrip({ frames: count, w, h, aspect });
     }
-
-    measure();
-    ro.observe(document.body);
-    window.addEventListener("scroll", kick, { passive: true });
 
     /* Start only once the page has loaded and gone idle, so the clip never
        competes with the hero, the fonts or the first scroll. */
@@ -291,9 +234,7 @@ export function SiteBackdrop() {
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener("scroll", kick);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("load", start);
       if (hasIdle) window.cancelIdleCallback(idleId);
       else clearTimeout(idleId);
@@ -301,21 +242,96 @@ export function SiteBackdrop() {
     };
   }, [reduce]);
 
+  /* -- script fallback for the frame stepping ------------------------------ */
+  useEffect(() => {
+    const a = stripA.current;
+    const b = stripB.current;
+    if (!strip || !a || !b || reduce || cssScroll) return;
+    const gaps = strip.frames - 1;
+    let maxScroll = 1;
+    const measure = () => {
+      maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+    const update = () => {
+      const f = Math.min(1, Math.max(0, window.scrollY / maxScroll)) * gaps;
+      const i = Math.min(gaps, Math.floor(f));
+      a.style.translate = `0 ${(-100 * i) / strip.frames}%`;
+      b.style.translate = `0 ${(-100 * (i + 1)) / strip.frames}%`;
+      b.style.opacity = String(f - i);
+    };
+    const ro = new ResizeObserver(() => {
+      measure();
+      update();
+    });
+    ro.observe(document.body);
+    window.addEventListener("scroll", update, { passive: true });
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("scroll", update);
+    };
+  }, [strip, reduce, cssScroll]);
+
+  /* A window exactly one frame in size, covering the screen like
+     object-fit: cover; each strip is N frames tall inside it, nudged up by
+     the padding so only each frame's interior shows. */
+  const windowStyle: CSSProperties | undefined = strip
+    ? {
+        width: `max(100vw, calc(100vh * ${strip.aspect}))`,
+        aspectRatio: `${strip.w} / ${strip.h}`,
+      }
+    : undefined;
+  const stripStyle: CSSProperties | undefined = strip
+    ? ({
+        top: `${(-100 * PAD) / strip.h}%`,
+        height: `${(100 * (strip.h + PAD * 2) * strip.frames) / strip.h}%`,
+        "--frames": strip.frames,
+      } as CSSProperties)
+    : undefined;
+  const animated = !!strip && !reduce;
+
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-50 overflow-hidden bg-background">
-      <canvas
-        ref={ref}
-        width={1}
-        height={1}
-        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-1000 [@media(hover:none)_and_(pointer:coarse)]:hidden"
-      />
       {/* Touch only (the same query as isTouchPrimary, so it is right from
-          the first paint): the light, in place of the canvas. */}
+          the first paint): the light the cubes cast, shown until they are
+          ready and underneath them after. */}
       <div
         ref={lightRef}
         className="backdrop-light absolute inset-0 hidden opacity-45 [@media(hover:none)_and_(pointer:coarse)]:block"
         style={{ backgroundImage: LIGHT, willChange: "opacity" }}
       />
+      <div
+        className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden transition-opacity duration-1000 ${
+          strip ? "opacity-100" : "opacity-0"
+        }`}
+        style={windowStyle}
+      >
+        <canvas
+          ref={stripA}
+          width={1}
+          height={1}
+          className={`absolute left-0 w-full will-change-transform ${animated ? "backdrop-a" : ""}`}
+          style={
+            animated
+              ? { ...stripStyle, animationTimingFunction: `steps(${strip.frames - 1}, end)` }
+              : stripStyle
+          }
+        />
+        <canvas
+          ref={stripB}
+          width={1}
+          height={1}
+          className={`absolute left-0 w-full will-change-transform ${animated ? "backdrop-b" : "hidden"}`}
+          style={
+            animated
+              ? {
+                  ...stripStyle,
+                  animationTimingFunction: `steps(${strip.frames - 1}, end), linear`,
+                  animationIterationCount: `1, ${strip.frames - 1}`,
+                }
+              : stripStyle
+          }
+        />
+      </div>
       {/* Only a source to sample from; never shown. */}
       <video
         ref={videoRef}

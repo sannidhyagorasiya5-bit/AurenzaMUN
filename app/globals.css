@@ -327,6 +327,36 @@ section[id] {
   animation-direction: var(--marquee-direction, normal);
 }
 
+/* Voxel backdrop (SiteBackdrop): two copies of a strip of N frames. A
+   steps to the frame at the scroll position, B to the one after it and
+   fades in across each gap, so the stack crossfades frame to frame. The
+   step count and B's fade repeats are set inline, from N. One frame is
+   100% / N of a strip's own height. */
+@keyframes backdrop-a {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(-100% * (var(--frames) - 1) / var(--frames));
+  }
+}
+@keyframes backdrop-b {
+  from {
+    translate: 0 calc(-100% / var(--frames));
+  }
+  to {
+    translate: 0 -100%;
+  }
+}
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Reading progress along the header capsule. */
 @keyframes read-progress {
   from {
@@ -358,6 +388,16 @@ section[id] {
   .marquee-scroll {
     animation: marquee-slide linear 3 both;
     animation-timeline: scroll(root block);
+  }
+  .backdrop-a {
+    animation-name: backdrop-a;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root block);
+  }
+  .backdrop-b {
+    animation-name: backdrop-b, backdrop-fade;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root block), scroll(root block);
   }
 }
 
