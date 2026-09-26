@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EASE } from "@/lib/motion";
+import { lockScroll, unlockScroll } from "@/lib/scroll";
 import type { Accent, Committee } from "@/lib/content";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
@@ -63,6 +64,21 @@ export function CommitteeModal({
   const reduce = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState("overview");
+  const locked = useRef(false);
+
+  /* Released the moment closing starts rather than after the exit
+     animation: the register CTA scrolls the page on the same click, and a
+     stopped Lenis would ignore it. */
+  const release = useCallback(() => {
+    if (!locked.current) return;
+    locked.current = false;
+    unlockScroll();
+  }, []);
+
+  const close = useCallback(() => {
+    release();
+    onClose();
+  }, [release, onClose]);
 
   const portfolios = committee.portfolios ?? [];
   const hasPortfolios = portfolios.length > 0;
@@ -77,21 +93,21 @@ export function CommitteeModal({
      both — including the card that opened it — on close. */
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockScroll();
+    locked.current = true;
     panelRef.current?.focus();
 
     return () => {
-      document.body.style.overflow = prevOverflow;
-      opener?.focus?.();
+      release();
+      opener?.focus?.({ preventScroll: true });
     };
-  }, []);
+  }, [release]);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        close();
         return;
       }
       if (e.key !== "Tab" || !panelRef.current) return;
@@ -113,7 +129,7 @@ export function CommitteeModal({
         first.focus();
       }
     },
-    [onClose],
+    [close],
   );
 
   useEffect(() => {
@@ -136,12 +152,12 @@ export function CommitteeModal({
           same reasoning already retired backdrop-filter from `.glass`; on a
           near-black canvas a denser scrim is near-indistinguishable. */}
       <motion.div
-        className="absolute inset-0 bg-background/92"
+        className="absolute inset-0 bg-background/[0.97]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
-        onClick={onClose}
+        onClick={close}
         aria-hidden
       />
 
@@ -155,13 +171,13 @@ export function CommitteeModal({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={reduce ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.98 }}
         transition={{ duration: 0.4, ease: EASE }}
-        className="glass relative z-10 flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl shadow-2xl shadow-black/60 focus-visible:outline-2"
+        className="glass relative z-10 flex max-h-[88vh] w-full max-w-3xl bg-[#0e1016] flex-col overflow-hidden rounded-3xl shadow-2xl shadow-black/60 focus-visible:outline-2"
       >
         {/* header */}
         <div className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-7">
           <button
             type="button"
-            onClick={onClose}
+            onClick={close}
             aria-label="Close committee details"
             className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-all duration-200 hover:bg-surface-strong hover:text-foreground active:scale-90 active:bg-surface-strong active:text-brand focus-visible:outline-2"
           >
@@ -215,7 +231,7 @@ export function CommitteeModal({
         )}
 
         {/* body */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+        <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={tab}
@@ -319,7 +335,7 @@ export function CommitteeModal({
         <div className="shrink-0 border-t border-border-glass p-5 sm:px-8">
           <MagneticButton
             href="#register"
-            onClick={onClose}
+            onClick={close}
             strength={0.15}
             className="w-full"
             ariaLabel={`Register for ${committee.abbr}`}

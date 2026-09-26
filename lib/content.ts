@@ -26,8 +26,9 @@ export const hero = {
     "https://www.google.com/maps/place/Swami+Vivekanand+International+School,+Kandivali,+MG+Cross+Road+No.+1,+Kandivali,+Gokul+Nagari,+Kandivali+West,+Mumbai,+Maharashtra+400067/@19.2096745,72.8446805,17z/data=!3m1!4b1!4m6!3m5!1s0x3be7b6d769be7cbb:0xe6a9f85dba3a9881!8m2!3d19.2096745!4d72.8472554!16s%2Fg%2F11bw417cc_?entry=ttu&g_ep=EgoyMDI2MDgxNi4wIKXMDSoASAFQAw%3D%3D",
   headline: ["AURENZA", "MUN"] as [string, string],
   subheadline:
-    "A premier Model United Nations conference bringing together student diplomats from across Mumbai — debate, collaborate, and resolve the world's toughest challenges.",
-  ctaPrimary: "REGISTER AS DELEGATE",
+    "A premier Model United Nations conference bringing together student diplomats from across Mumbai to debate, collaborate, and resolve the world's toughest challenges.",
+  lede: "Two days of debate, diplomacy and resolution for student delegates from across Mumbai.",
+  ctaPrimary: "REGISTER NOW",
   ctaSecondary: "EXPLORE COMMITTEES",
   stats: [
     { value: 13, label: "COMMITTEES" },
@@ -121,7 +122,7 @@ export const committees = {
           abbr: "AIPPM",
           name: "All India Political Parties Meet",
           agenda:
-            "Agenda A: discussion and deliberation on the constitutional validity of anti-conversion laws in India.\n\nAgenda B: discussion upon Article 19(1)(a) — freedom of speech and expression, with special emphasis on press freedom in India.",
+            "Agenda A: discussion and deliberation on the constitutional validity of anti-conversion laws in India.\n\nAgenda B: discussion upon Article 19(1)(a), freedom of speech and expression, with special emphasis on press freedom in India.",
           description:
             "The All India Political Parties Meet puts leaders from across the political spectrum in one room. Delegates argue as sitting politicians, defending a party line in public while searching for a consensus the country can actually live with.",
           chair: "Atharva Devedkar",
@@ -226,7 +227,7 @@ export const committees = {
           abbr: "MAHABHARATA",
           name: "A committee set on Mahabharata.",
           agenda:
-            "The Kurukshetra war: preventing, reshaping or waging the Great War — political alliances, succession, diplomacy and the fate of Hastinapura.",
+            "The Kurukshetra war: preventing, reshaping or waging the Great War: political alliances, succession, diplomacy and the fate of Hastinapura.",
           description:
             "Set in the Sabha of Hastinapura on the edge of the Kurukshetra war. Delegates embody the characters of the epic and argue dharma against ambition, kinship against justice, with the fate of a kingdom on the table.",
           chair: "Kaushal Barge",

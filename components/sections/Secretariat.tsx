@@ -4,9 +4,9 @@ import Image from "next/image";
 import type { TeamGroup, TeamMember } from "@/lib/content";
 import { secretariat } from "@/lib/content";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
-import { Pill } from "@/components/primitives/Pill";
+import { LegacyPill as Pill } from "@/components/primitives/legacy/LegacyPill";
 import { Reveal } from "@/components/primitives/Reveal";
-import { SectionIntro } from "@/components/primitives/SectionIntro";
+import { LegacySectionIntro as SectionIntro } from "@/components/primitives/legacy/LegacySectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 
 const initials = (name: string) =>

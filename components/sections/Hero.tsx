@@ -1,190 +1,143 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useReducedMotion } from "motion/react";
+import { useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { hero } from "@/lib/content";
-import { EASE } from "@/lib/motion";
+import { EASE, progressBetween } from "@/lib/motion";
 import { AnimatedHeading } from "@/components/primitives/AnimatedHeading";
-import { CountUp } from "@/components/primitives/CountUp";
-import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { MagneticButton } from "@/components/primitives/MagneticButton";
 import { Pill } from "@/components/primitives/Pill";
+import { LegacyPill } from "@/components/primitives/legacy/LegacyPill";
+import { ShaderBackdrop } from "@/components/primitives/ShaderBackdrop";
 
 export function Hero() {
   const reduce = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+
+  /* As the hero scrolls away the paint flow sinks and fades out, handing
+     over to the site-wide voxel backdrop, while the type lifts faster than
+     the page: a two-plane parallax rather than a plain slide. */
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const sceneY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
+  /* A function transform, not a range: see progressBetween. */
+  const sceneOpacity = useTransform(
+    scrollYProgress,
+    (v) => 1 - progressBetween(0.2, 0.95)(v),
+  );
+  const typeY = useTransform(scrollYProgress, [0, 1], ["0%", "-35%"]);
 
   const fade = (delay: number) =>
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 20 },
+          initial: { opacity: 0, y: 24 },
           animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.7, ease: EASE, delay },
+          transition: { duration: 0.9, ease: EASE, delay },
         };
 
   return (
     <section
+      ref={ref}
       id="top"
       aria-label="AurenzaMUN introduction"
-      className="relative flex min-h-[100dvh] items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8"
+      className="relative isolate flex flex-col overflow-hidden px-5 pb-12 pt-24 sm:min-h-[100dvh] sm:px-8 sm:pb-14 sm:pt-28"
     >
-      <GenerativeBackground variant="hero" />
+      {/* The paint flow. Its lower edge is masked away so it dissolves into
+          the voxel backdrop instead of ending on a hard line. */}
+      <motion.div
+        aria-hidden
+        style={
+          reduce
+            ? undefined
+            : { y: sceneY, scale: sceneScale, opacity: sceneOpacity }
+        }
+        className="absolute inset-0 -z-20 [mask-image:linear-gradient(to_bottom,black_60%,transparent)]"
+      >
+        <ShaderBackdrop />
+      </motion.div>
+      {/* Legibility: the lede sits bottom-left, so the scene is weighted a
+          little darker there. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(7,8,11,0.45),transparent_60%)]"
+      />
 
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-        {/* left: copy */}
-        <div>
-          <motion.div className="flex flex-wrap gap-3" {...fade(0.1)}>
-            <Pill accent="gold" variant="plate" dot>
-              {hero.badges[0]}
-            </Pill>
-            <a
-              href={hero.venueMapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${hero.badges[1]} — open in Google Maps`}
-              className="inline-block transition-all duration-200 hover:opacity-80 active:scale-95 active:opacity-70"
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
+        <motion.div
+          className="flex flex-nowrap items-center gap-2 sm:flex-wrap sm:gap-3"
+          {...fade(0.2)}
+        >
+          <Pill
+            variant="plate"
+            className="shrink-0 whitespace-nowrap max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
+          >
+            {hero.badges[0]}
+          </Pill>
+          <a
+            href={hero.venueMapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${hero.badges[1]}, open in Google Maps`}
+            className="inline-block shrink-0 transition-all duration-200 hover:opacity-80 active:scale-95 active:opacity-70"
+          >
+            {/* The original filled venue chip, restored as it was. */}
+            <LegacyPill
+              accent="blue"
+              dot
+              className="cursor-pointer whitespace-nowrap max-sm:gap-1.5! max-sm:px-2.5! max-sm:text-[0.56rem]! max-sm:tracking-[0.06em]!"
             >
-              <Pill accent="blue" dot className="cursor-pointer">
-                {hero.badges[1]}
-              </Pill>
-            </a>
-          </motion.div>
+              {hero.badges[1]}
+            </LegacyPill>
+          </a>
+        </motion.div>
 
+        <motion.div
+          style={reduce ? undefined : { y: typeY }}
+          className="mt-12 sm:mt-auto sm:pt-16"
+        >
           <AnimatedHeading
             as="h1"
             lines={hero.headline}
             splitBy="char"
             accentLine={1}
-            accentClass="text-brand"
-            className="mt-6 font-display text-[clamp(3.5rem,13vw,9rem)] font-bold uppercase leading-[0.85] tracking-tight"
+            animateOnMount
+            delay={0.25}
+            lineClassName={["", "sm:text-right"]}
+            className="font-display text-[clamp(3.5rem,16.5vw,16rem)] font-bold uppercase leading-[0.82] tracking-tight"
           />
 
-          <motion.p
-            className="mt-7 max-w-xl text-base leading-relaxed text-muted sm:text-lg"
-            {...fade(0.5)}
-          >
-            {hero.subheadline}
-          </motion.p>
-
-          <motion.div className="mt-9 flex flex-col gap-4 sm:flex-row" {...fade(0.65)}>
-            <MagneticButton href="#register" variant="primary">
-              {hero.ctaPrimary}
-            </MagneticButton>
-            <MagneticButton href="#committees" variant="secondary">
-              {hero.ctaSecondary}
-            </MagneticButton>
-          </motion.div>
-
-          <motion.dl className="mt-12 flex flex-wrap gap-6 sm:flex-nowrap sm:gap-12" {...fade(0.8)}>
-            {hero.stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <dd className="inline-block whitespace-nowrap font-display text-4xl font-bold tabular-nums text-blue sm:text-6xl">
-                  <CountUp to={s.value} duration={5} />
-                  {"suffix" in s ? s.suffix : ""}
-                </dd>
-                <dt className="mt-1 whitespace-nowrap font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
-                  {s.label}
-                </dt>
-              </div>
-            ))}
-          </motion.dl>
-        </div>
-
-        {/* right: floating generative cards */}
-        <div className="relative mt-4 h-72 sm:h-96 lg:mt-0 lg:h-[26rem]">
-          <a
-            href={hero.venueMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="SVIS Kandivali, Mumbai — open in Google Maps"
-            className="glass animate-glow absolute inset-6 block overflow-hidden rounded-[2rem] transition-[border-color,transform] duration-300 hover:border-brand/50 active:scale-[0.98] active:border-brand/60"
-          >
-            <Image
-              src="/kandivali.webp"
-              alt="SVIS Kandivali, Mumbai"
-              fill
-              className="object-cover"
-              sizes="(min-width: 1024px) 40vw, 100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-brand/20 via-transparent to-blue/20" />
-          </a>
-          <FloatingCard
-            {...hero.floatingCards[0]}
-            accent="gold"
-            className="left-0 top-6"
-            delay={0.9}
-            floatDelay="0s"
-          />
-          <FloatingCard
-            {...hero.floatingCards[1]}
-            accent="blue"
-            className="bottom-6 right-0"
-            delay={1.05}
-            floatDelay="-3s"
-          />
-        </div>
+          <div className="mt-8 grid gap-8 sm:mt-6 lg:-mt-[clamp(4rem,9vw,9rem)] lg:grid-cols-12">
+            <div className="lg:col-span-5">
+              <motion.p
+                className="max-w-[36ch] text-lg leading-relaxed text-foreground/85 sm:text-xl"
+                {...fade(0.9)}
+              >
+                {hero.lede}
+              </motion.p>
+              <motion.div
+                className="mt-8 flex flex-col gap-3 sm:flex-row"
+                {...fade(1.05)}
+              >
+                <MagneticButton href="#register" variant="primary" arrow>
+                  {hero.ctaPrimary}
+                </MagneticButton>
+                <MagneticButton href="#committees" variant="secondary">
+                  {hero.ctaSecondary}
+                </MagneticButton>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
       </div>
-
-      {/* scroll cue */}
-      <motion.div
-        aria-hidden
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:block"
-        initial={reduce ? {} : { opacity: 0 }}
-        animate={reduce ? {} : { opacity: 1 }}
-        transition={{ delay: 1.3 }}
-      >
-        <div className="flex h-10 w-6 items-start justify-center rounded-full border border-border-glass p-1.5">
-          <motion.span
-            className="h-2 w-1 rounded-full bg-brand"
-            animate={reduce ? {} : { y: [0, 10, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-      </motion.div>
     </section>
-  );
-}
-
-function FloatingCard({
-  label,
-  value,
-  accent,
-  className,
-  delay,
-  floatDelay,
-}: {
-  label: string;
-  value: string;
-  accent: "gold" | "blue";
-  className?: string;
-  delay: number;
-  floatDelay: string;
-}) {
-  const reduce = useReducedMotion();
-  const dot = accent === "gold" ? "bg-brand" : "bg-blue";
-  return (
-    <motion.div
-      initial={reduce ? {} : { opacity: 0, scale: 0.9 }}
-      animate={reduce ? {} : { opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6, ease: EASE, delay }}
-      className={`absolute w-40 sm:w-52 ${className}`}
-    >
-      <div
-        className="glass animate-float rounded-2xl p-5"
-        style={{
-          ["--float-duration" as string]: "7s",
-          animationDelay: floatDelay,
-          background: "rgba(60, 60, 60, 0.5)",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${dot}`} />
-          <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted">
-            {label}
-          </span>
-        </div>
-        <p className="mt-3 font-display text-lg font-semibold text-foreground">{value}</p>
-      </div>
-    </motion.div>
   );
 }

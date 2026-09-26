@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import "lenis/dist/lenis.css";
 import "./globals.css";
+import { SmoothScroll } from "@/components/providers/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0806",
+  themeColor: "#07080b",
   colorScheme: "dark",
 };
 
@@ -56,7 +58,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="shortcut icon" type="image/png" href="/logo.png?v=2" />
         <link rel="apple-touch-icon" type="image/png" href="/logo.png?v=2" />
       </head>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <SmoothScroll />
+        {children}
+        <div aria-hidden className="grain" />
+      </body>
     </html>
   );
 }

@@ -1,62 +1,90 @@
 "use client";
 
+import { BookOpenTextIcon, GavelIcon, NewspaperIcon } from "@phosphor-icons/react/dist/ssr";
 import { resources } from "@/lib/content";
-import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
 import { Pill } from "@/components/primitives/Pill";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionIntro } from "@/components/primitives/SectionIntro";
-import { TiltCard } from "@/components/primitives/TiltCard";
+import { SpotlightCard } from "@/components/primitives/SpotlightCard";
 
+const icons = [BookOpenTextIcon, GavelIcon, NewspaperIcon];
+
+/**
+ * Three documents as a bento: the study guide (the one every delegate
+ * needs) takes the tall cell with a lit backdrop, the two narrower documents
+ * stack beside it.
+ */
 export function Resources() {
   return (
     <section
       id="resources"
       aria-labelledby="resources-heading"
-      className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-32"
+      className="relative px-5 py-28 sm:px-8 sm:py-40"
     >
-      <GenerativeBackground />
+      <div className="mx-auto max-w-7xl">
+        <SectionIntro
+          id="resources-heading"
+          heading={resources.heading}
+          description={resources.description}
+        >
+          <Reveal delay={0.15}>
+            <div className="mt-7">
+              <Pill variant="dashed">{resources.statusBadge}</Pill>
+            </div>
+          </Reveal>
+        </SectionIntro>
 
-      <div className="mx-auto max-w-6xl">
-        <div id="resources-heading">
-          <SectionIntro
-            eyebrow={resources.eyebrow}
-            heading={resources.heading}
-            description={resources.description}
-            accent="blue"
-            accentClass="text-brand"
-          >
-            <Reveal delay={0.15}>
-              <div className="mt-6">
-                <Pill accent="blue" variant="dashed">
-                  {resources.statusBadge}
-                </Pill>
-              </div>
-            </Reveal>
-          </SectionIntro>
-        </div>
-
-        <div className="mt-14 grid gap-5 sm:grid-cols-2">
-          {resources.cards.map((card, i) => (
-            <Reveal key={card.title} delay={i * 0.07}>
-              <TiltCard accent="blue" className="flex h-full flex-col p-7">
-                <div className="flex items-center justify-between gap-4">
-                  <Pill accent="blue" variant="outline">
-                    {card.tag}
-                  </Pill>
-                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-muted">
-                    {card.state}
-                  </span>
-                </div>
-                <h3 className="mt-5 font-display text-xl font-bold tracking-tight">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{card.description}</p>
-                <div className="mt-6 h-px w-full bg-gradient-to-r from-blue/40 to-transparent" />
-              </TiltCard>
-            </Reveal>
-          ))}
-        </div>
+        <ul className="mt-16 grid gap-4 md:grid-cols-2 md:grid-rows-2">
+          {resources.cards.map((card, i) => {
+            const Icon = icons[i % icons.length];
+            const feature = i === 0;
+            return (
+              <Reveal
+                as="li"
+                key={card.title}
+                delay={i * 0.08}
+                className={feature ? "md:row-span-2" : ""}
+              >
+                <SpotlightCard
+                  className={`flex h-full flex-col p-7 sm:p-9 ${feature ? "min-h-[22rem] md:min-h-[32rem]" : "min-h-[15rem]"}`}
+                >
+                  {feature ? (
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(120%_80%_at_100%_100%,rgba(229,192,99,0.22),transparent_55%),radial-gradient(90%_70%_at_0%_0%,rgba(30,45,90,0.5),transparent_60%)]"
+                    />
+                  ) : null}
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-hairline-strong text-brand">
+                      <Icon weight="duotone" className="h-6 w-6" aria-hidden />
+                    </span>
+                    <span className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted">
+                      {card.state}
+                    </span>
+                  </div>
+                  <div className="mt-auto pt-10">
+                    <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-brand">
+                      {card.tag}
+                    </p>
+                    <h3
+                      className={`mt-3 font-display font-extrabold uppercase leading-[0.95] tracking-tight ${
+                        feature ? "text-[clamp(2rem,4vw,3.5rem)]" : "text-2xl sm:text-3xl"
+                      }`}
+                    >
+                      {card.title}
+                    </h3>
+                    <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-[0.95rem]">
+                      {card.description}
+                    </p>
+                  </div>
+                </SpotlightCard>
+              </Reveal>
+            );
+          })}
+        </ul>
 
         <Reveal delay={0.1}>
-          <p className="mt-10 text-center text-sm text-muted">{resources.closing}</p>
+          <p className="mt-10 text-sm text-muted">{resources.closing}</p>
         </Reveal>
       </div>
     </section>

@@ -46,3 +46,24 @@ export const wordReveal: Variants = {
 
 /** Shared viewport config for whileInView reveals. */
 export const VIEWPORT = { once: true, amount: 0.3 } as const;
+
+/**
+ * Maps scroll progress onto 0..1 across [start, end], clamped.
+ *
+ * Use this (a function transform) rather than a range array for any
+ * scroll-linked opacity. Given a range array, Motion hands opacity to a
+ * native ScrollTimeline, and for targets containing a sticky stage that
+ * timeline resolves the wrong progress: the countdown faded *out* as it
+ * was scrolled into. A function cannot be offloaded, so it stays correct.
+ */
+export const progressBetween = (start: number, end: number) => (v: number) =>
+  Math.min(1, Math.max(0, (v - start) / (end - start)));
+
+/**
+ * Alternating entrance for a row of panels: even panels rise into place,
+ * odd ones drop into it, one after another. Spread onto <Reveal>.
+ */
+export const alternateIn = (index: number) => ({
+  y: index % 2 ? -36 : 36,
+  delay: 0.1 + index * 0.12,
+});

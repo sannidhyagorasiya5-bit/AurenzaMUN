@@ -6,7 +6,7 @@ import { committees, type Accent, type Committee, type Track } from "@/lib/conte
 import { EASE } from "@/lib/motion";
 import { CommitteeModal } from "@/components/primitives/CommitteeModal";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
-import { SectionIntro } from "@/components/primitives/SectionIntro";
+import { LegacySectionIntro as SectionIntro } from "@/components/primitives/legacy/LegacySectionIntro";
 import { TiltCard } from "@/components/primitives/TiltCard";
 import { TrackTabs, type TabItem } from "@/components/primitives/TrackTabs";
 import { useCoarsePointer } from "@/lib/pointer";

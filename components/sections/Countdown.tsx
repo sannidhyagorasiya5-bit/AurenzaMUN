@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { EASE } from "@/lib/motion";
+import { EASE, alternateIn } from "@/lib/motion";
 import { GenerativeBackground } from "@/components/primitives/GenerativeBackground";
-import { SectionIntro } from "@/components/primitives/SectionIntro";
+import { LegacySectionIntro as SectionIntro } from "@/components/primitives/legacy/LegacySectionIntro";
 import { Reveal } from "@/components/primitives/Reveal";
 
 /** Opening gavel — 10th October 2026, 12:00 AM IST. */
@@ -32,7 +32,9 @@ function getRemaining() {
  */
 export function Countdown() {
   const reduce = useReducedMotion();
-  const [time, setTime] = useState<ReturnType<typeof getRemaining> | null>(null);
+  const [time, setTime] = useState<ReturnType<typeof getRemaining> | null>(
+    null,
+  );
 
   useEffect(() => {
     /* First reading lands after the first paint, not during the effect
@@ -77,42 +79,56 @@ export function Countdown() {
           />
         </div>
 
-        <Reveal delay={0.15}>
-          <div
-            role="timer"
-            aria-live="polite"
-            aria-atomic="true"
-            className="mt-10 flex flex-wrap gap-4 sm:flex-nowrap sm:gap-6"
-          >
-            {units.map((u) => (
-              <div
+        {/* Styled after the stat panels under the hero: one bordered block,
+            white numbers over mono labels, each cell drawing its own divider
+            (four across from sm, two by two on a phone). The cells fade in
+            alternately; the digits still roll as they change. */}
+        <div
+          role="timer"
+          aria-live="polite"
+          aria-atomic="true"
+          className="mt-10 grid grid-cols-2 overflow-hidden rounded-surface border border-hairline sm:grid-cols-4"
+        >
+          {units.map((u, i) => {
+            const digits = String(u.value).padStart(2, "0");
+            return (
+              <Reveal
                 key={u.label}
-                className="glass min-w-[6.5rem] flex-1 rounded-3xl px-4 py-6 text-center sm:px-6 sm:py-8"
+                {...alternateIn(i)}
+                className={`bg-background/60 ${i % 2 ? "border-l border-hairline" : ""} ${
+                  i >= 2 ? "border-t border-hairline sm:border-t-0" : ""
+                } ${i === 2 ? "sm:border-l" : ""}`}
               >
-                <div className="relative h-[1em] overflow-hidden font-display text-4xl font-bold tabular-nums text-brand sm:text-6xl">
-                  <AnimatePresence mode="popLayout" initial={false}>
-                    <motion.span
-                      key={u.value}
-                      initial={reduce ? {} : { y: "-100%", opacity: 0 }}
-                      animate={{ y: "0%", opacity: 1 }}
-                      exit={reduce ? {} : { y: "100%", opacity: 0 }}
-                      transition={{
-                        y: { duration: 0.4, ease: EASE },
-                        opacity: { duration: 0.55, ease: EASE },
-                      }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      {String(u.value).padStart(2, "0")}
-                    </motion.span>
-                  </AnimatePresence>
+                <div className="flex h-full flex-col-reverse justify-end gap-2 px-4 py-6 sm:gap-3 sm:px-8 sm:py-12">
+                  <p className="font-mono text-[0.6rem] uppercase leading-snug tracking-[0.14em] text-muted sm:text-[0.7rem] sm:tracking-[0.2em]">
+                    {u.label}
+                  </p>
+                  <div className="relative overflow-hidden font-display text-[clamp(2.1rem,8vw,6.5rem)] font-black leading-none tracking-tight tabular-nums">
+                    {/* Invisible copy holds the width; the rolling digit sits over it. */}
+                    <span aria-hidden className="invisible">
+                      {digits}
+                    </span>
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.span
+                        key={u.value}
+                        initial={reduce ? {} : { y: "-100%", opacity: 0 }}
+                        animate={{ y: "0%", opacity: 1 }}
+                        exit={reduce ? {} : { y: "100%", opacity: 0 }}
+                        transition={{
+                          y: { duration: 0.4, ease: EASE },
+                          opacity: { duration: 0.55, ease: EASE },
+                        }}
+                        className="absolute inset-0 flex items-center"
+                      >
+                        {digits}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
                 </div>
-                <p className="mt-2 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
-                  {u.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

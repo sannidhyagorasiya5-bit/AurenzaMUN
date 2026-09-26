@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   animate,
+  motion,
   useInView,
+  useMotionValue,
   useReducedMotion,
+  useTransform,
 } from "motion/react";
-import { DURATION, EASE } from "@/lib/motion";
+import { EASE } from "@/lib/motion";
 
 /**
- * Animated stat counter. Counts from 0 to `to` when first scrolled into
- * view. Renders the final value immediately on reduced-motion (and the
- * initial SSR paint shows 0 -> corrected on mount, but reduced-motion and
- * no-JS both resolve to the real number).
+ * Stat counter that runs from 0 to `to` the first time it scrolls into view.
+ * The number lives in a motion value rendered directly by <motion.span>, so
+ * the count never re-renders React. Reduced motion shows the final value.
  */
 export function CountUp({
   to,
-  duration = DURATION.slow,
+  duration = 2.4,
   className = "",
 }: {
   to: number;
@@ -26,21 +28,22 @@ export function CountUp({
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
-  const [value, setValue] = useState(reduce ? to : 0);
+  const value = useMotionValue(reduce ? to : 0);
+  const rounded = useTransform(value, (v) => Math.round(v));
 
   useEffect(() => {
-    if (reduce || !inView) return;
-    const controls = animate(0, to, {
-      duration,
-      ease: EASE,
-      onUpdate: (latest) => setValue(Math.round(latest)),
-    });
+    if (reduce) {
+      value.set(to);
+      return;
+    }
+    if (!inView) return;
+    const controls = animate(value, to, { duration, ease: EASE });
     return () => controls.stop();
-  }, [inView, reduce, to, duration]);
+  }, [inView, reduce, to, duration, value]);
 
   return (
-    <span ref={ref} className={className}>
-      {value}
-    </span>
+    <motion.span ref={ref} className={className}>
+      {rounded}
+    </motion.span>
   );
 }

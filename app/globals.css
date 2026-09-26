@@ -1,195 +1,161 @@
 @import "tailwindcss";
 
 /* ============================================================
-   AurenzaMUN — forced dark theme
+   AurenzaMUN — cinematic dark editorial
+   ------------------------------------------------------------
+   One theme (dark), one accent (gold). Navy only ever appears as
+   atmosphere inside the hero scene, never as a UI colour.
+
+   Shape rule: interactive controls (buttons, tabs, chips) are full
+   pills; every surface (cards, image frames, dialog) uses --radius.
+
+   Z-index scale: header 50 · grain 60 · mobile menu 70 · dialog 120.
    ============================================================ */
 :root {
   color-scheme: dark;
 
-  --background: #06080f; /* black with a faint blue cast */
-  --foreground: #f8f8ff; /* ghost white */
-  --muted: #99a3ba; /* cool grey */
+  --background: #07080b;
+  --surface: #0d0f14;
+  --elevated: #13161d;
+  --foreground: #f3f1ec;
+  --muted: #9aa0ab; /* 7.4:1 on --background */
+  --hairline: rgba(243, 241, 236, 0.09);
+  --hairline-strong: rgba(243, 241, 236, 0.18);
 
-  --brand: #e7c25a; /* GOLD — lead/primary (buttons, wordmark, headings) */
-  --brand-fg: #06080f; /* near-black text on gold */
-  --blue: #4c8dff; /* blue — highlights + School track */
-  --ice: #a9c4f5; /* ice-blue — IP track */
+  --brand: #e5c063; /* the single accent */
+  --brand-soft: #f1d894;
+  --brand-fg: #0b0a07;
 
-  /* Midnight-blue accent text. Dark navy is invisible on the near-black
-     background (#191970 vs --background is ~1.4:1), so it only ever gets
-     painted on the light chips below, where it clears 10:1. The light
-     --blue/--ice above still drive borders, dots and gradient glows. */
-  --blue-deep: #191970; /* midnight blue — 11.7:1 on --blue-chip */
-  --ice-deep: #20306e; /* deep navy — 10.7:1 on --ice-chip */
+  --radius: 0.5rem;
+
+  /* Original palette, still used by the Team, Committees and Contact
+     sections, which keep their pre-redesign look. */
+  --blue: #4c8dff;
+  --ice: #a9c4f5;
+  --blue-deep: #191970;
+  --ice-deep: #20306e;
   --blue-chip: #dbe4f7;
   --ice-chip: #eaf0fc;
-
-  --surface: rgba(255, 255, 255, 0.04);
   --surface-strong: rgba(255, 255, 255, 0.06);
   --border-glass: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
 
   --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
   --color-brand-fg: var(--brand-fg);
+
+  --radius-surface: var(--radius);
+
   --color-blue: var(--blue);
   --color-ice: var(--ice);
   --color-blue-deep: var(--blue-deep);
   --color-ice-deep: var(--ice-deep);
   --color-blue-chip: var(--blue-chip);
   --color-ice-chip: var(--ice-chip);
-
-  --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
   --color-border-glass: var(--border-glass);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-space-grotesk);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ============================================================
    Base
    ============================================================ */
-/* Native smooth-scroll gets starved on a heavy page and crawls to anchors,
-   which makes clicks feel unresponsive. Instant jumps + scroll-margin-top
-   keep anchor navigation snappy. */
 html {
+  /* Lenis owns smoothing; native smooth-scroll would fight it. */
   scroll-behavior: auto;
-  /* The dialog and the mobile menu both lock the body by hiding overflow.
-     Without a reserved gutter the desktop scrollbar vanishes at that moment
-     and the whole page, fixed header included, jumps sideways just as the
-     open animation starts. */
   scrollbar-gutter: stable;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
-/* Sticky-header offset for anchor navigation */
+/* Dialog and mobile menu lock the page through lib/scroll.ts. */
+html.scroll-locked,
+html.scroll-locked body {
+  overflow: hidden;
+}
+
 section[id] {
-  scroll-margin-top: 6rem;
+  scroll-margin-top: 5rem;
 }
 
-/* Nothing on this page needs to be drag-selected, and scoping the fix to
-   individual elements kept missing spots on mobile (a tap's tiny finger
-   movement was being read as a text-select drag). Disable selection
-   site-wide instead; browsers still allow long-press/context-menu actions,
-   they just won't start a text selection off a plain tap. */
-html {
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  user-select: none;
-  touch-action: manipulation;
-}
-
-::selection {
-  background: var(--brand);
-  color: var(--brand-fg);
-}
-
-:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 3px;
-  border-radius: 4px;
+/* Hollow display type for the marquee and footer wordmark. */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(243, 241, 236, 0.35);
 }
 
 /* ============================================================
-   Keyframes — transform / opacity only (GPU-friendly)
+   Film grain — fixed, never on a scrolling layer, so it costs one
+   composite rather than a repaint per frame.
    ============================================================ */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes marquee-reverse {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -18px, 0);
-  }
-}
-
-@keyframes glow {
-  0%,
-  100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.animate-marquee {
-  animation: marquee var(--marquee-duration, 28s) linear infinite;
-}
-.animate-marquee-reverse {
-  animation: marquee-reverse var(--marquee-duration, 28s) linear infinite;
-}
-.animate-float {
-  animation: float var(--float-duration, 6s) ease-in-out infinite;
-}
-.animate-glow {
-  animation: glow var(--glow-duration, 7s) ease-in-out infinite;
-}
-
-/* Pause the marquee while a pointer rests on it. A phone has no hover, so
-   the ticker also parks under a held finger, driven by data-held. */
-.marquee-pause:hover .animate-marquee,
-.marquee-pause:hover .animate-marquee-reverse,
-.marquee-pause[data-held="true"] .animate-marquee,
-.marquee-pause[data-held="true"] .animate-marquee-reverse {
-  animation-play-state: paused;
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 /* ============================================================
-   Reusable surfaces
+   Surfaces
    ============================================================ */
-/* No backdrop-filter: on a dark canvas an opaque translucent surface looks
-   near-identical to a real blur but costs nothing to composite. Applying a
-   live blur to dozens of cards at once was saturating the main thread. */
-/* In @layer components on purpose: an unlayered rule outranks every layered
-   one no matter how specific, so an unlayered `border` shorthand here beat
-   the `hover:border-*` / `active:border-*` utilities and the accent border
-   never lit on any device. Layered, the utilities win. */
 @layer components {
+  /* Original glass surface, for the restored sections. */
   .glass {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-glass);
   }
+
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
 }
 
 /* ============================================================
-   Reduced motion — belt & suspenders for CSS animations
+   Keyframes (transform / opacity only)
+   ============================================================ */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2.2s var(--ease-out-expo) infinite;
+}
+
+/* ============================================================
+   Reduced motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {

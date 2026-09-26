@@ -1,31 +1,52 @@
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
+import type Lenis from "lenis";
 
 /**
- * Animates the page to an element's position over a fixed duration,
- * honoring the element's `scroll-margin-top` (used for sticky-header
- * offset elsewhere on the site). Duration 0 jumps instantly — used for
- * prefers-reduced-motion.
+ * The page's one Lenis instance, registered by <SmoothScroll />. Everything
+ * that moves the page goes through here so anchor jumps, the dialog and the
+ * mobile menu all agree on who owns scrolling. When Lenis is absent (reduced
+ * motion, or before hydration) every helper falls back to native scrolling.
  */
-export function smoothScrollTo(target: HTMLElement, duration = 700) {
-  const scrollMarginTop = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-  const startY = window.scrollY;
-  const targetY = target.getBoundingClientRect().top + startY - scrollMarginTop;
-  const diff = targetY - startY;
+let lenis: Lenis | null = null;
 
-  if (duration <= 0 || Math.abs(diff) < 1) {
-    window.scrollTo(0, targetY);
-    return;
+export function registerLenis(instance: Lenis | null) {
+  lenis = instance;
+}
+
+export function getLenis() {
+  return lenis;
+}
+
+/** Scrolls to an element or selector, honouring its `scroll-margin-top`. */
+export function scrollToTarget(target: HTMLElement | string, immediate = false) {
+  const el =
+    typeof target === "string" ? document.querySelector<HTMLElement>(target) : target;
+  if (!el) return false;
+
+  if (lenis) {
+    /* Lenis reads the target's scroll-margin-top on its own. */
+    lenis.scrollTo(el, { immediate, duration: 1.4 });
+  } else {
+    const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - margin;
+    window.scrollTo({ top, behavior: immediate ? "auto" : "smooth" });
   }
+  return true;
+}
 
-  const start = performance.now();
+/* Counted, so the dialog opening over an open menu (or the reverse) never
+   unlocks the page while something is still on top of it. */
+let locks = 0;
 
-  function step(now: number) {
-    const progress = Math.min((now - start) / duration, 1);
-    window.scrollTo(0, startY + diff * easeInOutCubic(progress));
-    if (progress < 1) requestAnimationFrame(step);
-  }
+export function lockScroll() {
+  locks += 1;
+  if (locks > 1) return;
+  lenis?.stop();
+  document.documentElement.classList.add("scroll-locked");
+}
 
-  requestAnimationFrame(step);
+export function unlockScroll() {
+  locks = Math.max(0, locks - 1);
+  if (locks > 0) return;
+  lenis?.start();
+  document.documentElement.classList.remove("scroll-locked");
 }
